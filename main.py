@@ -5,8 +5,7 @@ class Natural:
         Attributes:
             n: Длина массива, представляющего натуральное число.
             values: Массив цифр натурального числа.
-        """
-
+    """
     def __init__(self, n: int, values: list[int]):
         if n != len(values) or n == 0 or len(values) == 0:
             raise ValueError("Неправильная длина числа!")
@@ -75,5 +74,5 @@ class Polynomial:
              коэффициенты многочлена.
     """
     def __init__(self, array_polynomial: list[Natural, list[Rational]]):
-        self.degree = array_polynomial[0]  # степень первого многочлена
-        self.coefficients = array_polynomial[1]  # коэффиценты первого многочлена
+        self.degree = array_polynomial[0]  # степень многочлена
+        self.coefficients = array_polynomial[1]  # коэффиценты многочлена
