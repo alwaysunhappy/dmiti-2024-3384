@@ -43,6 +43,18 @@ class Integers(Natural):
     def __init__(self, n: int, values: list[int], sign: bool):
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
+        
+    def check_sign(self):
+        """
+        POZ_Z_D
+        Определение положительности числа. (0-число равно 0, 1 - отрицательное, 2 - положительное)
+        """
+        if (self.n == 1 and self.values[0]==0): # Проверяем, является ли число нулем
+            return 0
+        else:
+            if not(self.sign): # Проверем отрицательное (sign = true) число или нет
+                return 2
+            return 1
 
 
 class Rational:
