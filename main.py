@@ -39,7 +39,7 @@ class Natural:
         elif self.n < other.n:  # иначе, больше второе число
             return 1
         else:  # если их длины равны, проверяем числа, начиная с нулевого разряда
-            for i in range(self.n - 1, -1, -1):
+            for i in range(self.n):
                 if self.values[i] > other.values[i]:
                     return 2
                 elif self.values[i] < other.values[i]:
