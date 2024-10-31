@@ -27,6 +27,27 @@ class Natural:
         """
         return Natural(self.n, self.values.copy())
 
+    def __mul__(self, number):
+        """
+            MUL_ND_N
+            Умножение натурального числа на цифру
+        """
+        answer = [0] * (self.n + 1) # Создаем список нулей длиной n + 1 для хранения результата
+        shift = 0  # перенос в следующий разряд
+        for i in range(1, self.n + 2):
+            # Если индекс разряда i меньше или равен длине натурального числа
+            if self.n >= i:
+                # Вычисляем произведение значения разряда i на цифру, добавляя перенос
+                total = self.values[-i] * number + shift
+                answer[-i] = total % 10
+                shift = total // 10
+            else:
+                # Если индекс i превышает длину натурального числа, в результат просто записываем перенос
+                answer[-i] = shift
+        natural = Natural(len(answer), answer)
+        natural.del_leader_zero()
+        return natural
+
 
 class Integers(Natural):
     """
