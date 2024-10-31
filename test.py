@@ -62,3 +62,4 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
+    
