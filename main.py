@@ -27,6 +27,25 @@ class Natural:
         """
         return Natural(self.n, self.values.copy())
 
+    def cmp_of_natural_number(self, other):
+        """
+            Сравнивает два натуральных числа и возвращает:
+            2 - если первое число больше второго,
+            0 - если числа равны,
+            1 - если первое число меньше второго.
+        """
+        if self.n > other.n:  # проверяем, больше ли длина первого числа длины второго, что означает, что первое больше
+            return 2
+        elif self.n < other.n:  # иначе, больше второе число
+            return 1
+        else:  # если их длины равны, проверяем числа, начиная с нулевого разряда
+            for i in range(self.n - 1, -1, -1):
+                if self.values[i] > other.values[i]:
+                    return 2
+                elif self.values[i] < other.values[i]:
+                    return 1
+        return 0
+
 
 class Integers(Natural):
     """
@@ -43,6 +62,15 @@ class Integers(Natural):
     def __init__(self, n: int, values: list[int], sign: bool):
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
+
+    def abs_integer(self):
+        """
+            ABS_Z_N
+            Функция берет модуль числа и возвращает его
+        """
+        if self.sign is True:  # проверяем знак
+            self.sign = False  # если знак числа минус, то меняем знак на положительный
+        return self  # выводим получившиеся число
 
 
 class Rational:
@@ -76,3 +104,10 @@ class Polynomial:
     def __init__(self, array_polynomial: list[Natural, list[Rational]]):
         self.degree = array_polynomial[0]  # степень многочлена
         self.coefficients = array_polynomial[1]  # коэффиценты многочлена
+
+    def degree_polynomial(self):
+        """
+            DEG_P_N
+        Функция возвращает степень многочлена
+        """
+        return self.degree  # возвращает степень многочлена
