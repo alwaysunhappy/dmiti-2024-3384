@@ -96,7 +96,18 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
-    
+
+  
+@pytest.mark.parametrize("num , expected", [
+    (123 , 2),
+    (0, 0),
+    (321 , 2),
+    (-1000 , 1),
+    (-63943 , 1),
+])
+def test_check_sign(num, expected):
+    assert Integers(len(str(num)) if num>=0 else len(str(num))-1 , [int(i) for i in str(num) if i!= '-'] , True if num<0 else False).check_sign() == expected
+
 
 @pytest.mark.parametrize("degree, array_coef, expected", [
     (5, [[0], [1], [2], [3], [4], [5]], 5),
