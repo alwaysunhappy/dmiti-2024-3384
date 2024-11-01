@@ -66,6 +66,70 @@ class Natural:
                 elif self.values[i] < other.values[i]:
                     return 1
         return 0
+
+    def __add__(self, other):
+        """
+            ADD_NN_N
+            Складывает два натурльных числа и возвращает результат
+        """
+        if self.cmp_of_natural_number(other) == 1:  # если второе значение больше
+            larger_number, smaller_number = other.copy(), self.copy()
+        else:
+            larger_number, smaller_number = self.copy(), other.copy()
+
+        shift = 0  # перенос в следущий разряд
+        answer = [0] * (larger_number.n + 1)  # массив длиной на один разряд больше большего числа
+        for i in range(1, larger_number.n + 2):  # перебираем -1 индекс,-2 индекс и т.д.
+            if smaller_number.n >= i:  # если у меньшего числа еще есть, что складывать
+                total = larger_number.values[-i] + smaller_number.values[-i] + shift
+                answer[-i] = total % 10  # получаем цифру которая запишется в этом разряде
+                shift = total // 10  # считаем перенос на след разряд
+            elif larger_number.n >= i:  # когда у второго числа уже нечего складывать
+                total = larger_number.values[-i] + shift
+                answer[-i] = total % 10
+                shift = total // 10
+            else:
+                answer[-i] = shift  # обрабатываем случай, если перенос случился на первом разрде (9 + 99 = 18)
+                # <- здесь запишем единицу
+
+        natural = create_natural(answer)
+        natural.del_leader_zero()
+        return natural
+
+    def __sub__(self, other):
+        """
+            SUB_NN_N
+            Вычитание натуральных чисел
+        """
+        if self.cmp_of_natural_number(other) == 1:  # если второе значение больше
+            larger_number, smaller_number = other.copy(), self.copy()
+        else:
+            larger_number, smaller_number = self.copy(), other.copy()
+        carry = 0  # Переменная для учета переноса (если предыдущий разряд занял десятку)
+        # Инициализируем массив для ответа, размер которого равен размеру большего числа
+        answer = [0] * larger_number.n
+        for i in range(1, larger_number.n + 1):  # Начинаем перебор разрядов с последнего
+            if smaller_number.n >= i:  # Если у меньшего числа есть разряд, который можно вычесть
+                total = larger_number.values[-i] - smaller_number.values[-i] - carry
+                # Если большему числу не хватает для вычитания, добавляем 10 и устанавливаем перенос
+                if total < 0:
+                    total += 10
+                    carry = 1
+                else:
+                    carry = 0
+                answer[-i] = total
+            # Если у большего числа есть разряд, но у меньшего нет
+            elif larger_number.n >= i:
+                if larger_number.values[-i] == 0 and carry:  # если мы занимали, но след. разряд 0, нужно снова занять
+                    total = larger_number.values[-i] - carry + 10
+                else:
+                    total = larger_number.values[-i] - carry
+                    carry = 0
+                answer[-i] = total
+
+        natural = create_natural(answer)
+        natural.del_leader_zero()
+        return natural
     
     def __str__(self):
         return "".join(list(map(str, self.values)))
