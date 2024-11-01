@@ -24,6 +24,18 @@ def test_Natural_ValueError(num, expected):
         natural = Natural(len(num) + 1, num)
 
 
+@pytest.mark.parametrize("natural, number, expected", [
+    ([9, 9, 9], 9, [8, 9, 9, 1]),
+    ([9, 9, 9], 0, [0]),
+    ([5], 5, [2, 5]),
+    ([9, 9, 9], 1, [9, 9, 9])
+])
+def test_mul(natural, number, expected):
+    natural = Natural(len(natural), natural)
+    result = natural.__mul__(number)
+    assert result.values == expected
+
+    
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),
     (10, 10, 0),
