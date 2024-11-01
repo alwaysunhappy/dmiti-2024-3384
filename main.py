@@ -67,6 +67,33 @@ class Natural:
                     return 1
         return 0
     
+    def increment(self):
+        """
+            ADD_1N_N
+            Добавление 1 к натуральному числу
+        """
+        number = self.copy()
+        # Начинаем с последней цифры, увеличивая её на 1
+        shift = (number.values[number.n - 1] + 1) // 10  # Определяем, потребуется ли перенос
+        number.values[number.n - 1] = (number.values[number.n - 1] + 1) % 10  # Обновляем последнюю цифру
+
+        # Если перенос остался после изменения последней цифры, идем по остальным разрядам
+        if shift != 0:
+            for index in range(number.n - 2, -1, -1):  # Проходим от предпоследнего элемента к первому
+                num = number.values[index]  # Берем значение текущего разряда
+                number.values[index] = (num + shift) % 10  # Добавляем перенос и записываем результат в текущий разряд
+                shift = (num + shift) // 10  # Пересчитываем перенос для следующего разряда
+
+                # Если перенос больше не нужен, выходим из цикла
+                if shift == 0:
+                    break
+
+        # Если перенос остался после обработки всех разрядов, добавляем его в старший разряд
+        if shift == 1:
+            number.values.insert(0, 1)  # Вставляем 1 в начало массива, чтобы отразить перенос
+            number.n += 1  # Увеличиваем длину числа, так как добавился новый разряд
+        return number
+    
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -86,6 +113,10 @@ class Integers(Natural):
     def __init__(self, n: int, values: list[int], sign: bool):
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
+
+    def copy(self):
+        # Создает и возвращает новый объект Integers, копируя значения текущего объекта
+        return Integers(self.n, self.values.copy(), self.sign)
         
     def check_sign(self):
         """
@@ -108,6 +139,18 @@ class Integers(Natural):
             self.sign = False  # если знак числа минус, то меняем знак на положительный
         return self  # выводим получившиеся число
 
+    def invert_sign(self):
+        """"
+            MUL_ZM_Z
+            Умножение целого на (-1)
+        """
+        number = self.copy()
+        # Инвертирует знак текущего объекта, если он не равен 0 (если был False, станет True, и наоборот)
+        if number.values != [0]:
+            number.sign = (number.sign == False)
+        # Возвращает текущий объект с инвертированным знаком
+        return number
+
     def __str__(self):
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
@@ -127,6 +170,10 @@ class Rational:
     def __init__(self, array_rational: list[Integers, Natural]):
         self.numerator = array_rational[0]  # числитель дроби
         self.denominator = array_rational[1]  # знаменатель дроби
+
+    def copy(self):
+        # Создает и возвращает новый объект Rational, копируя значения текущего объекта
+        return Rational([self.numerator.copy(), self.denominator.copy()])
 
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
@@ -148,12 +195,44 @@ class Polynomial:
         self.degree = array_polynomial[0]  # степень многочлена
         self.coefficients = array_polynomial[1]  # коэффиценты многочлена
 
+    def copy(self):
+        # Создает и возвращает новый объект Polynomial, копируя значения текущего объекта
+        return Polynomial([self.degree.copy(), self.coefficients.copy()])
+
     def degree_polynomial(self):
         """
             DEG_P_N
         Функция возвращает степень многочлена
         """
         return self.degree  # возвращает степень многочлена
+    
+    def multiply_by_monomial(self, k):
+        """
+        DEG_P_N
+        Функция возвращает степень многочлена
+        """
+        # Создаем копию текущего полинома, чтобы не изменять оригинал.
+        polynomial = self.copy()
+        
+        # Устанавливаем степень полинома равной k.
+        polynomial.degree = k
+        
+        # Создаем объект Natural, представляющий число 1.
+        one = Natural(1, [1])
+        
+        # Создаем копию k, чтобы не изменять оригинальное значение.
+        k = k.copy()
+        
+        # Пока k не равно 0, добавляем нулевые коэффициенты в начало списка коэффициентов полинома.
+        while k.cmp_of_natural_number(Natural(1, [0])) != 0:
+            # Добавляем нулевой коэффициент в начало списка коэффициентов.
+            polynomial.coefficients.insert(0, Rational([Integers(1, [0], False), one]))
+            
+            # Уменьшаем k на 1.
+            k = k - one
+
+        # Возвращаем полином, умноженный на одночлен.
+        return polynomial
 
     def __str__(self):
         result = ''
