@@ -51,6 +51,32 @@ def test_cmp_of_natural_number(num1, num2, expected):
     assert num1.cmp_of_natural_number(num2) == expected
 
 
+@pytest.mark.parametrize("num1, num2, expected", [
+    ([9, 9, 9], [1], [1, 0, 0, 0]),
+    ([0], [0], [0]),
+    ([1, 0, 0], [1, 0], [1, 1, 0]),
+    ([5, 5, 5], [5, 5, 5], [1, 1, 1, 0]),
+    ([0], [1, 0], [1, 0]),
+])
+def test_add(num1, num2, expected):
+    num1 = Natural(len(num1), num1)
+    num2 = Natural(len(num2), num2)
+    assert (num1 + num2).values == expected
+
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    ([1, 0, 0, 0], [1], [9, 9, 9]),
+    ([0], [0], [0]),
+    ([1, 1, 0], [1, 0], [1, 0, 0]),
+    ([5, 5, 5], [1, 7, 8], [3, 7, 7]),
+    ([1, 0], [0], [1, 0]),
+])
+def test_sub(num1, num2, expected):
+    num1 = Natural(len(num1), num1)
+    num2 = Natural(len(num2), num2)
+    assert (num1 - num2).values == expected
+
+
 @pytest.mark.parametrize("num, sign, expected_n, expected_values, expected_sign", [
     (100, False, 3, [1, 0, 0], False),
     (0, False, 1, [0], False),
