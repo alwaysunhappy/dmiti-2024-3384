@@ -208,8 +208,8 @@ class Polynomial:
     
     def multiply_by_monomial(self, k):
         """
-        DEG_P_N
-        Функция возвращает степень многочлена
+        MUL_Pxk_P
+        Умножение многочлена на x^k, k-натуральное или 0
         """
         # Создаем копию текущего полинома, чтобы не изменять оригинал.
         polynomial = self.copy()
