@@ -1,5 +1,5 @@
-from main import *
 import pytest
+from main import *
 
 
 @pytest.mark.parametrize("num, expected_n, expected_values", [
@@ -35,7 +35,24 @@ def test_mul(natural, number, expected):
     result = natural.__mul__(number)
     assert result.values == expected
 
-    
+
+@pytest.mark.parametrize("number, s_number, expected", [
+    (1233, 3123, "3850659"),
+    (123, 0, "0"),
+    (1223433, 32134123, "39313946504259"),
+    (12323, 312, "3844776"),
+    (12133, 31423, "381255259"),
+
+])
+def test_multiply(number, s_number, expected):
+    natural = [int(i) for i in str(number)]
+    s_natural = [int(i) for i in str(s_number)]
+    natural = create_natural(natural)
+    s_natural = create_natural(s_natural)
+    result = natural.multiply(s_natural)
+    assert result.__str__() == expected
+
+
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),
     (10, 10, 0),
@@ -49,6 +66,7 @@ def test_cmp_of_natural_number(num1, num2, expected):
     num1 = create_natural(num1)
     num2 = create_natural(num2)
     assert num1.cmp_of_natural_number(num2) == expected
+
 
 @pytest.mark.parametrize("num, expected_num", [
     (100, 101),
@@ -88,6 +106,28 @@ def test_sub(num1, num2, expected):
     assert (num1 - num2).values == expected
 
 
+@pytest.mark.parametrize("num , expected", [
+    (12321321321, True),
+    (0000000000, False),
+    (12321321, True),
+    (0, False),
+    (1, True),
+])
+def test_number_is_not_zero(num, expected):
+    assert Natural(len(str(num)), [int(i) for i in str(num)]).number_is_not_zero() == expected
+
+
+@pytest.mark.parametrize("num, k , expected", [
+    (1232, 5, [int(i) for i in str(1232)] + [0] * 5),
+    (12312, 0, [int(i) for i in str(12312)] + [0] * 0),
+    (1231123232, 3, [int(i) for i in str(1231123232)] + [0] * 3),
+    (0, 2, [0]),
+    (12312545, 4, [int(i) for i in str(12312545)] + [0] * 4),
+])
+def test_multiply_by_ten(num, k, expected):
+    assert Natural(len(str(num)), [int(i) for i in str(num)]).multiply_by_ten(k).values == expected
+
+
 @pytest.mark.parametrize("num, sign, expected_n, expected_values, expected_sign", [
     (100, False, 3, [1, 0, 0], False),
     (0, False, 1, [0], False),
@@ -119,10 +159,11 @@ def test_abs_integer(num, expected):
     integers = create_integer(num, sign)
     assert integers.abs_integer().values == expected
 
+
 @pytest.mark.parametrize("num, expected_num", [
     (-100, 100),
     (0, 0),
-    (1, -1)
+    (1, "- 1")
 ])
 def test_MUL_ZM_Z(num, expected_num):
     abs_num = num * (-1) if num < 0 else num
@@ -130,7 +171,7 @@ def test_MUL_ZM_Z(num, expected_num):
     sign = False if num >= 0 else True
     integer = Integers(len(list_of_num), list_of_num, sign)
     integer = integer.invert_sign()
-    assert str(integer) == str(expected_num) 
+    assert str(integer) == str(expected_num)
 
 
 @pytest.mark.parametrize("numerator, denominator, sign, expected_numerator_n, expected_numerator_values, "
@@ -147,16 +188,17 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
 
-  
+
 @pytest.mark.parametrize("num , expected", [
-    (123 , 2),
+    (123, 2),
     (0, 0),
-    (321 , 2),
-    (-1000 , 1),
-    (-63943 , 1),
+    (321, 2),
+    (-1000, 1),
+    (-63943, 1),
 ])
 def test_check_sign(num, expected):
-    assert Integers(len(str(num)) if num>=0 else len(str(num))-1 , [int(i) for i in str(num) if i!= '-'] , True if num<0 else False).check_sign() == expected
+    assert Integers(len(str(num)) if num >= 0 else len(str(num)) - 1, [int(i) for i in str(num) if i != '-'],
+                    True if num < 0 else False).check_sign() == expected
 
 
 @pytest.mark.parametrize("degree, array_coef, expected", [
@@ -174,10 +216,11 @@ def test_degree_polynomial(degree, array_coef, expected):
         new_coefficients[i] = create_rational(array_coef[i], denominator)
     assert Polynomial([degree, new_coefficients]).degree_polynomial().values == [expected]
 
+
 @pytest.mark.parametrize("coeff, degree, k, expected_coeff", [
-    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1' ,'-37/11', '53/7', '23/9']),
+    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1', '- 37/11', '53/7', '23/9']),
     (['283/12', '1/3', '4/7', '2/1'], '4', '0', ['283/12', '1/3', '4/7', '2/1'])
-])  
+])
 def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
     rational_list = []
     for item in coeff:
