@@ -185,6 +185,10 @@ class Natural:
 
 
     def multiply(self,other):
+        """
+        MUL_NN_N
+        Функция для умножения 2 натуральных чисел.
+        """
         cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
 
         if cmp == 2 or cmp == 0: # Копируем больший элемент в f, а меньший в s
