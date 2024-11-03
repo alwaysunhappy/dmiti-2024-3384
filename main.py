@@ -219,7 +219,7 @@ class Integers(Natural):
 
     def __str__(self):
         sign = "- " if self.sign else ""
-        return sign + "".join(list(map(str, self.values)))\
+        return sign + "".join(list(map(str, self.values)))
         
     def subtraction_integers(self, other):
         """"
