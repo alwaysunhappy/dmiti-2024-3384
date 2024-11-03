@@ -244,6 +244,48 @@ class Rational:
 
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
+        
+    def comparing_numbers(self):
+        """
+        Сравнивает числитель и знаменатель, без учета знака. 'N', если значение числителя
+        больше, 'D', если знаменатель больше, 'M', если равны.
+        """
+        numerator = self.numerator
+        denominator = self.denominator
+        
+        # Сравнение списков цифр, начиная с наиболее значимой цифры
+        if numerator.n > denominator.n:
+            return 'N'
+        elif numerator.n < denominator.n:
+            return 'D'
+        else:
+            for num_digit, denom_digit in zip(numerator.values, denominator.values):
+                if num_digit > denom_digit:
+                    return 'N'
+                elif num_digit < denom_digit:
+                    return 'D'
+            return 'M'
+
+    def Int_check(self):
+        """
+        Проверка сокращенного дробного на целое, если рациональное число является целым, то True, иначе False
+        """
+        comp = self.comparing_numbers()
+        
+        if comp == 'M':
+            return True
+        
+        if comp == 'D':
+            return False
+        
+        if comp == 'N':
+            num = self.numerator
+            while self.comparing_numbers() == 'N':
+                self.denominator = self.denominator.__add__(self.denominator)
+            if self.comparing_numbers() == 'M':
+                return True
+            else:
+                return False
 
 
 class Polynomial:

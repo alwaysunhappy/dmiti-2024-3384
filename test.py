@@ -195,3 +195,12 @@ def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
     result = polynomial.multiply_by_monomial(Natural(len(k), [int(i) for i in k]))
     result_list = [str(i) for i in result.coefficients]
     assert result_list == expected_coeff
+    
+@pytest.mark.parametrize("numerator, denominator, sign, expected_answer", [
+                             ([1, 2], [6], True, True),
+                             ([1, 0, 2], [5, 1], False, True),
+                             ([1, 5, 0], [4, 9], False, False)
+                         ])
+def test_Int_check_Rational(numerator, denominator, sign, expected_answer):
+    rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
+    assert rational.Int_check() == expected_answer
