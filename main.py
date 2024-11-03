@@ -109,13 +109,14 @@ class Integers(Natural):
         return self  # выводим получившиеся число
 
     def __str__(self):
+        sign = "- " if self.sign else ""
+        return sign + "".join(list(map(str, self.values)))
+        
+    def subtraction_integers(self, other):
         """
             SUB_ZZ_Z
             Вычитание целых чисел
         """
-        sign = "- " if self.sign else ""
-        return sign + "".join(list(map(str, self.values)))
-        def subtraction_integers(self, other):
         # Проверка на случай, если self равно нулю
         if self.values == [0] and other.values != [0]:  
             result = other.copy()
