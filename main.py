@@ -6,6 +6,7 @@ class Natural:
             n: Длина массива, представляющего натуральное число.
             values: Массив цифр натурального числа.
     """
+
     def __init__(self, n: int, values: list[int]):
         if n != len(values) or n == 0 or len(values) == 0:
             raise ValueError("Неправильная длина числа!")
@@ -32,7 +33,7 @@ class Natural:
             MUL_ND_N
             Умножение натурального числа на цифру
         """
-        answer = [0] * (self.n + 1) # Создаем список нулей длиной n + 1 для хранения результата
+        answer = [0] * (self.n + 1)  # Создаем список нулей длиной n + 1 для хранения результата
         shift = 0  # перенос в следующий разряд
         for i in range(1, self.n + 2):
             # Если индекс разряда i меньше или равен длине натурального числа
@@ -66,7 +67,7 @@ class Natural:
                 elif self.values[i] < other.values[i]:
                     return 1
         return 0
-    
+
     def increment(self):
         """
             ADD_1N_N
@@ -93,7 +94,71 @@ class Natural:
             number.values.insert(0, 1)  # Вставляем 1 в начало массива, чтобы отразить перенос
             number.n += 1  # Увеличиваем длину числа, так как добавился новый разряд
         return number
-    
+
+    def __add__(self, other):
+        """
+            ADD_NN_N
+            Складывает два натурльных числа и возвращает результат
+        """
+        if self.cmp_of_natural_number(other) == 1:  # если второе значение больше
+            larger_number, smaller_number = other.copy(), self.copy()
+        else:
+            larger_number, smaller_number = self.copy(), other.copy()
+
+        shift = 0  # перенос в следущий разряд
+        answer = [0] * (larger_number.n + 1)  # массив длиной на один разряд больше большего числа
+        for i in range(1, larger_number.n + 2):  # перебираем -1 индекс,-2 индекс и т.д.
+            if smaller_number.n >= i:  # если у меньшего числа еще есть, что складывать
+                total = larger_number.values[-i] + smaller_number.values[-i] + shift
+                answer[-i] = total % 10  # получаем цифру которая запишется в этом разряде
+                shift = total // 10  # считаем перенос на след разряд
+            elif larger_number.n >= i:  # когда у второго числа уже нечего складывать
+                total = larger_number.values[-i] + shift
+                answer[-i] = total % 10
+                shift = total // 10
+            else:
+                answer[-i] = shift  # обрабатываем случай, если перенос случился на первом разрде (9 + 99 = 18)
+                # <- здесь запишем единицу
+
+        natural = create_natural(answer)
+        natural.del_leader_zero()
+        return natural
+
+    def __sub__(self, other):
+        """
+            SUB_NN_N
+            Вычитание натуральных чисел
+        """
+        if self.cmp_of_natural_number(other) == 1:  # если второе значение больше
+            larger_number, smaller_number = other.copy(), self.copy()
+        else:
+            larger_number, smaller_number = self.copy(), other.copy()
+        carry = 0  # Переменная для учета переноса (если предыдущий разряд занял десятку)
+        # Инициализируем массив для ответа, размер которого равен размеру большего числа
+        answer = [0] * larger_number.n
+        for i in range(1, larger_number.n + 1):  # Начинаем перебор разрядов с последнего
+            if smaller_number.n >= i:  # Если у меньшего числа есть разряд, который можно вычесть
+                total = larger_number.values[-i] - smaller_number.values[-i] - carry
+                # Если большему числу не хватает для вычитания, добавляем 10 и устанавливаем перенос
+                if total < 0:
+                    total += 10
+                    carry = 1
+                else:
+                    carry = 0
+                answer[-i] = total
+            # Если у большего числа есть разряд, но у меньшего нет
+            elif larger_number.n >= i:
+                if larger_number.values[-i] == 0 and carry:  # если мы занимали, но след. разряд 0, нужно снова занять
+                    total = larger_number.values[-i] - carry + 10
+                else:
+                    total = larger_number.values[-i] - carry
+                    carry = 0
+                answer[-i] = total
+
+        natural = create_natural(answer)
+        natural.del_leader_zero()
+        return natural
+
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -110,6 +175,7 @@ class Integers(Natural):
       sign: Булевый флаг, указывающий знак числа.
          True - отрицательное число, False - положительное.
     """
+
     def __init__(self, n: int, values: list[int], sign: bool):
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
@@ -117,16 +183,16 @@ class Integers(Natural):
     def copy(self):
         # Создает и возвращает новый объект Integers, копируя значения текущего объекта
         return Integers(self.n, self.values.copy(), self.sign)
-        
+
     def check_sign(self):
         """
         POZ_Z_D
         Определение положительности числа. (0-число равно 0, 1 - отрицательное, 2 - положительное)
         """
-        if (self.n == 1 and self.values[0]==0): # Проверяем, является ли число нулем
+        if (self.n == 1 and self.values[0] == 0):  # Проверяем, является ли число нулем
             return 0
         else:
-            if not(self.sign): # Проверем отрицательное (sign = true) число или нет
+            if not (self.sign):  # Проверем отрицательное (sign = true) число или нет
                 return 2
             return 1
 
@@ -167,6 +233,7 @@ class Rational:
       numerator: Объект класса Integers, представляющий числитель дроби.
       denominator: Объект класса Natural, представляющий знаменатель дроби.
     """
+
     def __init__(self, array_rational: list[Integers, Natural]):
         self.numerator = array_rational[0]  # числитель дроби
         self.denominator = array_rational[1]  # знаменатель дроби
@@ -191,6 +258,7 @@ class Polynomial:
       coefficients: Список объектов класса Rational, представляющий
              коэффициенты многочлена.
     """
+
     def __init__(self, array_polynomial: list[Natural, list[Rational]]):
         self.degree = array_polynomial[0]  # степень многочлена
         self.coefficients = array_polynomial[1]  # коэффиценты многочлена
@@ -205,7 +273,7 @@ class Polynomial:
         Функция возвращает степень многочлена
         """
         return self.degree  # возвращает степень многочлена
-    
+
     def multiply_by_monomial(self, k):
         """
         MUL_Pxk_P
@@ -213,21 +281,21 @@ class Polynomial:
         """
         # Создаем копию текущего полинома, чтобы не изменять оригинал.
         polynomial = self.copy()
-        
+
         # Устанавливаем степень полинома равной k.
         polynomial.degree = k
-        
+
         # Создаем объект Natural, представляющий число 1.
         one = Natural(1, [1])
-        
+
         # Создаем копию k, чтобы не изменять оригинальное значение.
         k = k.copy()
-        
+
         # Пока k не равно 0, добавляем нулевые коэффициенты в начало списка коэффициентов полинома.
         while k.cmp_of_natural_number(Natural(1, [0])) != 0:
             # Добавляем нулевой коэффициент в начало списка коэффициентов.
             polynomial.coefficients.insert(0, Rational([Integers(1, [0], False), one]))
-            
+
             # Уменьшаем k на 1.
             k = k - one
 
@@ -344,8 +412,6 @@ class Launch:
             print(natural.cmp_of_natural_number(natural_second))
 
 
-
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
-
