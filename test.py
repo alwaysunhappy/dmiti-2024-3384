@@ -123,3 +123,27 @@ def test_degree_polynomial(degree, array_coef, expected):
         array_coef[i] = create_integer(array_coef[i], False)
         new_coefficients[i] = create_rational(array_coef[i], denominator)
     assert Polynomial([degree, new_coefficients]).degree_polynomial().values == [expected]
+    
+@pytest.mark.parametrize("num1, num2, expected_values, expected_sign", [
+    (50, 25, [2, 5], False),    
+    (25, 50, [2, 5], True),    
+    (-50, -25, [2, 5], True),  
+    (-25, -50, [2, 5], False),  
+    (50, -25, [7, 5], False),   
+    (-25, 50, [7, 5], True),   
+    (25, 25, [0], False),     
+    (-25, -25, [0], False),    
+    (0, 50, [5, 0], True),      
+    (50, 0, [5, 0], False),     
+    (0, 0, [0], False) 
+])
+def test_subtraction_integers(num1, num2, expected_values, expected_sign):
+
+    num1_obj = Integers(len(str(abs(num1))), [int(i) for i in str(abs(num1))], num1 < 0)
+    num2_obj = Integers(len(str(abs(num2))), [int(i) for i in str(abs(num2))], num2 < 0)
+
+    result = num1_obj.subtraction_integers(num2_obj)
+    
+    assert result.values == expected_values
+    assert result.sign == expected_sign
+

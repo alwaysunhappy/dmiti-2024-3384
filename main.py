@@ -109,8 +109,49 @@ class Integers(Natural):
         return self  # выводим получившиеся число
 
     def __str__(self):
+        """
+            SUB_ZZ_Z
+            Вычитание целых чисел
+        """
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
+        def subtraction_integers(self, other):
+        # Проверка на случай, если self равно нулю
+        if self.values == [0] and other.values != [0]:  
+            result = other.copy()
+            result.sign = not other.sign  # Меняем знак результата
+            return result
+        # Если оба числа имеют одинаковый знак
+        if self.check_sign() == other.check_sign():
+        # Оба положительные
+            if self.check_sign() == 2:
+                if self.cmp_of_natural_number(other) == 1:
+                    result = other.__sub__(self)  # Вычитаем большее из меньшего
+                    result = Integers(result.n, result.values, True)  # Отрицательный результат
+                elif self.cmp_of_natural_number(other) == 2:
+                    result = self.__sub__(other)  # Вычитаем меньшее из большего
+                    result = Integers(result.n, result.values, False)  # Положительный результат
+                else:
+                # Если числа равны, результат нулевой с положительным знаком
+                    return Integers(1, [0], False)
+        # Оба отрицательные
+            else:
+                if self.cmp_of_natural_number(other) == 1:
+                    result = other.__sub__(self)
+                    result = Integers(result.n, result.values, False)  # Положительный результат
+                elif self.cmp_of_natural_number(other) == 2:
+                    result = self.__sub__(other)
+                    result = Integers(result.n, result.values, True)  # Отрицательный результат
+                else:
+                # Если числа равны, результат нулевой с положительным знаком
+                    return Integers(1, [0], False)
+
+    # Числа имеют разные знаки
+        else:
+            result = self.__add__(other.abs_integer())  # Складываем модули чисел
+            result = Integers(result.n, result.values, self.sign)  # Сохраняем знак `self`
+
+        return result
 
 
 class Rational:
