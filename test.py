@@ -50,6 +50,17 @@ def test_cmp_of_natural_number(num1, num2, expected):
     num2 = create_natural(num2)
     assert num1.cmp_of_natural_number(num2) == expected
 
+@pytest.mark.parametrize("num, expected_num", [
+    (100, 101),
+    (1, 2),
+    (1234, 1235),
+    (999, 1000)
+])
+def test_ADD_1N_N(num, expected_num):
+    natural = Natural(len(str(num)), [int(i) for i in str(num)])
+    natural = natural.increment()
+    assert int(str(natural)) == expected_num
+
 
 @pytest.mark.parametrize("num1, num2, expected", [
     ([9, 9, 9], [1], [1, 0, 0, 0]),
@@ -108,6 +119,19 @@ def test_abs_integer(num, expected):
     integers = create_integer(num, sign)
     assert integers.abs_integer().values == expected
 
+@pytest.mark.parametrize("num, expected_num", [
+    (-100, 100),
+    (0, 0),
+    (1, -1)
+])
+def test_MUL_ZM_Z(num, expected_num):
+    abs_num = num * (-1) if num < 0 else num
+    list_of_num = [int(i) for i in str(abs_num)]
+    sign = False if num >= 0 else True
+    integer = Integers(len(list_of_num), list_of_num, sign)
+    integer = integer.invert_sign()
+    assert str(integer) == str(expected_num) 
+
 
 @pytest.mark.parametrize("numerator, denominator, sign, expected_numerator_n, expected_numerator_values, "
                          "expected_denominator_n, expected_denominator_values", [
@@ -149,3 +173,25 @@ def test_degree_polynomial(degree, array_coef, expected):
         array_coef[i] = create_integer(array_coef[i], False)
         new_coefficients[i] = create_rational(array_coef[i], denominator)
     assert Polynomial([degree, new_coefficients]).degree_polynomial().values == [expected]
+
+@pytest.mark.parametrize("coeff, degree, k, expected_coeff", [
+    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1' ,'-37/11', '53/7', '23/9']),
+    (['283/12', '1/3', '4/7', '2/1'], '4', '0', ['283/12', '1/3', '4/7', '2/1'])
+])  
+def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = polynomial.multiply_by_monomial(Natural(len(k), [int(i) for i in k]))
+    result_list = [str(i) for i in result.coefficients]
+    assert result_list == expected_coeff
