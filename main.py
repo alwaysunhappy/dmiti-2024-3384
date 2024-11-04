@@ -28,7 +28,7 @@ class Natural:
         """
         return Natural(self.n, self.values.copy())
 
-    def __mul__(self, number):
+    def multiplication_by_digit(self, number):
         """
             MUL_ND_N
             Умножение натурального числа на цифру
@@ -445,3 +445,4 @@ class Launch:
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
+
