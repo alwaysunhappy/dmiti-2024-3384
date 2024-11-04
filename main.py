@@ -198,10 +198,9 @@ class Natural:
             lower_number = self.copy()
             larger_number = other.copy()
 
-        lower_number.values.reverse()
         res = Natural(1,[0])
         k = 0
-        for i in range(lower_number.n): # Проходим по разрядам меньшего элемента и умножаем их на большее число
+        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
             tmp = larger_number.__mul__(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
             res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
