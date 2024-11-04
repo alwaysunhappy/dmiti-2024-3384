@@ -191,18 +191,20 @@ class Natural:
         """
         cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
 
-        if cmp == 2 or cmp == 0: # Копируем больший элемент в f, а меньший в s
-            f = self.copy()
-            s = other.copy()
+        if cmp == 2 or cmp == 0: # Копируем больший элемент в larger_number, а меньший в lower_number
+            larger_number = self.copy()
+            lower_number= other.copy()
         else:
-            s = self.copy()
-            f = other.copy()
+            lower_number = self.copy()
+            larger_number = other.copy()
 
-        s.values.reverse()
+        lower_number.values.reverse()
         res = Natural(1,[0])
         k = 0
-        for i in range(s.n): # Проходим по разрядам меньшего элемента и умножаем их на большее число
-            res = res.__add__((f.__mul__(s.values[i])).multiply_by_ten(k)) # Суммируем каждый разряд (как в умножении в столбик)
+        for i in range(lower_number.n): # Проходим по разрядам меньшего элемента и умножаем их на большее число
+            tmp = larger_number.__mul__(lower_number.values[i])
+            tmp = tmp.multiply_by_ten(k)
+            res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
             k += 1
         return res
 
