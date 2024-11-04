@@ -36,8 +36,7 @@ class Natural:
         """
         return not (self.n == 1 and self.values[0] == 0)
 
-
-    def __mul__(self, number):
+    def multiplication_by_digit(self, number):
         """
             MUL_ND_N
             Умножение натурального числа на цифру
@@ -170,7 +169,6 @@ class Natural:
         natural.del_leader_zero()
         return natural
 
-
     def multiply_by_ten(self, k):
         """
         MUL_Nk_N
@@ -183,8 +181,7 @@ class Natural:
         res.n += k #увеличиваем длину на k
         return res
 
-
-    def multiply(self,other):
+    def __mul__(self,other):
         """
         MUL_NN_N
         Функция для умножения 2 натуральных чисел.
@@ -201,12 +198,27 @@ class Natural:
         res = Natural(1,[0])
         k = 0
         for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
-            tmp = larger_number.__mul__(lower_number.values[i])
+            tmp = larger_number.multiplication_by_digit(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
             res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
             k += 1
         return res
 
+    def trans_in_integer(self, sign: bool = False):
+        """
+        TRANS_N_Z
+        Преобразование натурального в целое
+        """
+        return Integers(self.n, self.values.copy(), sign)
+      
+    def subtract_scaled_natural(self, other, number):
+        """
+        SUB_NDN_N
+        Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
+        """
+        mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
+        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
+            return self.__sub__(mul) # вычитание 
 
     def __str__(self):
         return "".join(list(map(str, self.values)))
@@ -226,6 +238,8 @@ class Integers(Natural):
     """
 
     def __init__(self, n: int, values: list[int], sign: bool):
+        if sign == True and all([i == 0 for i in values]):
+            raise ValueError("Нуль не может быть быть отрицательным!")
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
 
@@ -266,6 +280,22 @@ class Integers(Natural):
         # Возвращает текущий объект с инвертированным знаком
         return number
 
+    def trans_in_natural(self):
+        """
+        TRANS_Z_N
+        Преобразование целого неотрицательного в натуральное
+        """
+        if self.sign == True:
+            raise ValueError("Число не может быть отрицательное!")
+        return Natural(self.n, self.values.copy())
+    
+    def trans_in_rational(self):
+        """
+        TRANS_Q_Z
+        Преобразование целого в дробное
+        """
+        return Rational([self.copy(), Natural(1, [1])])
+        
     def __str__(self):
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
@@ -291,6 +321,11 @@ class Rational:
         # Создает и возвращает новый объект Rational, копируя значения текущего объекта
         return Rational([self.numerator.copy(), self.denominator.copy()])
 
+    def trans_in_integer(self):
+        if self.denominator.values != [1]:
+            raise ValueError("Знаменатель должен быть единицой!")
+        return self.numerator.copy()
+    
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
 
@@ -464,3 +499,4 @@ class Launch:
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
+
