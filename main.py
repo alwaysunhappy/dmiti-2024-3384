@@ -370,7 +370,7 @@ class Rational:
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
         
-    def Int_check(self):
+    def int_check(self):
         """
         Проверка сокращенного дробного на целое, если рациональное число является целым, то True, иначе False
         """
@@ -574,7 +574,7 @@ class Launch:
         if self.number == 1:
             natural = input_natural()
             natural_second = input_natural()
-            print(natural.multiply(natural_second))
+            print(natural.cmp_of_natural_number(natural_second))
 
 
 if __name__ == "__main__":

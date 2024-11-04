@@ -323,9 +323,9 @@ def test_trans_from_rational_in_integer(
                              ([1, 0, 2], [5, 1], False, True),
                              ([1, 5, 0], [4, 9], False, False)
                          ])
-def test_Int_check_Rational(numerator, denominator, sign, expected_answer):
+def test_int_check_Rational(numerator, denominator, sign, expected_answer):
     rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
-    assert rational.Int_check() == expected_answer
+    assert rational.int_check() == expected_answer
 
 @pytest.mark.parametrize("num1, num2, expected_values, expected_sign", [
     (50, 25, [2, 5], False),    
