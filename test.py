@@ -30,9 +30,9 @@ def test_Natural_ValueError(num, expected):
     ([5], 5, [2, 5]),
     ([9, 9, 9], 1, [9, 9, 9])
 ])
-def test_mul(natural, number, expected):
+def test_multiplication_by_digit(natural, number, expected):
     natural = Natural(len(natural), natural)
-    result = natural.__mul__(number)
+    result = natural.multiplication_by_digit(number)
     assert result.values == expected
 
     

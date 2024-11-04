@@ -27,7 +27,7 @@ class Natural:
         """
         return Natural(self.n, self.values.copy())
 
-    def __mul__(self, number):
+    def multiplication_by_digit(self, number):
         """
             MUL_ND_N
             Умножение натурального числа на цифру
