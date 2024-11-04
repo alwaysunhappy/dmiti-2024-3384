@@ -165,6 +165,15 @@ class Natural:
         Преобразование натурального в целое
         """
         return Integers(self.n, self.values.copy(), sign)
+      
+    def subtract_scaled_natural(self, other, number):
+        """
+        SUB_NDN_N
+        Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
+        """
+        mul = other.__mul__(number) # Умножение второго натурального на цифру
+        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
+            return self.__sub__(mul) # вычитание 
     
     def __str__(self):
         return "".join(list(map(str, self.values)))
