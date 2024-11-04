@@ -28,6 +28,14 @@ class Natural:
         """
         return Natural(self.n, self.values.copy())
 
+    def number_is_not_zero(self):
+        """
+        NZER_N_B
+        Функция которое проверяет является ли число не нулевым.
+        Если число равно 0 возвращает False, иначе True.
+        """
+        return not (self.n == 1 and self.values[0] == 0)
+
     def multiplication_by_digit(self, number):
         """
             MUL_ND_N
@@ -48,6 +56,8 @@ class Natural:
         natural = Natural(len(answer), answer)
         natural.del_leader_zero()
         return natural
+
+
 
     def cmp_of_natural_number(self, other):
         """
@@ -159,6 +169,41 @@ class Natural:
         natural.del_leader_zero()
         return natural
 
+    def multiply_by_ten(self, k):
+        """
+        MUL_Nk_N
+        Функция умножения натурального числа на 10^k
+        """
+        if not(self.number_is_not_zero()):
+            return self
+        res = self.copy() #создаем копию числа
+        res.values = res.values + [0] * k #добавляем в конец числа k 0
+        res.n += k #увеличиваем длину на k
+        return res
+
+    def __mul__(self,other):
+        """
+        MUL_NN_N
+        Функция для умножения 2 натуральных чисел.
+        """
+        cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
+
+        if cmp == 2 or cmp == 0: # Копируем больший элемент в larger_number, а меньший в lower_number
+            larger_number = self.copy()
+            lower_number= other.copy()
+        else:
+            lower_number = self.copy()
+            larger_number = other.copy()
+
+        res = Natural(1,[0])
+        k = 0
+        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
+            tmp = larger_number.multiplication_by_digit(lower_number.values[i])
+            tmp = tmp.multiply_by_ten(k)
+            res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
+            k += 1
+        return res
+
     def trans_in_integer(self, sign: bool = False):
         """
         TRANS_N_Z
@@ -171,10 +216,10 @@ class Natural:
         SUB_NDN_N
         Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
         """
-        mul = other.__mul__(number) # Умножение второго натурального на цифру
+        mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
         if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
             return self.__sub__(mul) # вычитание 
-    
+
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -448,7 +493,7 @@ class Launch:
         if self.number == 1:
             natural = input_natural()
             natural_second = input_natural()
-            print(natural.cmp_of_natural_number(natural_second))
+            print(natural.multiply(natural_second))
 
 
 if __name__ == "__main__":
