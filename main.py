@@ -159,6 +159,16 @@ class Natural:
         natural.del_leader_zero()
         return natural
 
+    def subtract_scaled_natural(self, other, number):
+        """
+        SUB_NDN_N
+        Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
+        """
+        mul = other.__mul__(number) # Умножение второго натурального на цифру
+        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
+            return self.__sub__(mul) # вычетание 
+
+
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -410,6 +420,12 @@ class Launch:
             natural = input_natural()
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
+
+        if self.number == 9:
+            natural = input_natural()
+            natural_second = input_natural()
+            natural_number = int(input("Введите цифру: "))
+            print(natural.subtract_scaled_natural(natural_second,natural_number))
 
 
 if __name__ == "__main__":

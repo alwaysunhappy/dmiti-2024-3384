@@ -50,6 +50,19 @@ def test_cmp_of_natural_number(num1, num2, expected):
     num2 = create_natural(num2)
     assert num1.cmp_of_natural_number(num2) == expected
 
+@pytest.mark.parametrize("num1, num2, number, expected", [
+    (100, 9, 2, [8, 2]),
+    (600, 200, 3, [0]),
+    (78, 53, 0, [7, 8]),
+])
+def test_subtract_scaled_natural(num1, num2, number, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.subtract_scaled_natural(num2, number)
+    assert result.values == expected
+
 @pytest.mark.parametrize("num, expected_num", [
     (100, 101),
     (1, 2),
