@@ -219,7 +219,7 @@ class Natural:
         mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
         if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
             return self.__sub__(mul) # вычитание 
-
+    
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -299,7 +299,48 @@ class Integers(Natural):
     def __str__(self):
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
+    
+    def subtraction_integers(self, other):
+        """"
+            SUB_ZZ_Z
+            Вычитание целых чисел
+        """
+        if self.values == [0] and other.values != [0]:  
+            result = other.copy()
+            result.sign = not other.sign  # Меняем знак результата
+            return result
 
+    # Если оба числа имеют одинаковый знак
+        if self.check_sign() == other.check_sign():
+        # Оба положительные
+            if self.check_sign() == 2:
+                if self.cmp_of_natural_number(other) == 1:
+                    result = other.__sub__(self)  # Вычитаем большее из меньшего
+                    result = Integers(result.n, result.values, True)  # Отрицательный результат
+                elif self.cmp_of_natural_number(other) == 2:
+                    result = self.__sub__(other)  # Вычитаем меньшее из большего
+                    result = Integers(result.n, result.values, False)  # Положительный результат
+                else:
+                # Если числа равны, результат нулевой с положительным знаком
+                    return Integers(1, [0], False)
+        # Оба отрицательные
+            else:
+                if self.cmp_of_natural_number(other) == 1:
+                    result = other.__sub__(self)
+                    result = Integers(result.n, result.values, False)  # Положительный результат
+                elif self.cmp_of_natural_number(other) == 2:
+                    result = self.__sub__(other)
+                    result = Integers(result.n, result.values, True)  # Отрицательный результат
+                else:
+                # Если числа равны, результат нулевой с положительным знаком
+                    return Integers(1, [0], False)
+
+    # Числа имеют разные знаки
+        else:
+            result = self.__add__(other.abs_integer())  # Складываем модули чисел
+            result = Integers(result.n, result.values, self.sign)  # Сохраняем знак `self`
+
+        return result
 
 class Rational:
     """
@@ -328,6 +369,29 @@ class Rational:
     
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
+        
+    def Int_check(self):
+        """
+        Проверка сокращенного дробного на целое, если рациональное число является целым, то True, иначе False
+        """
+        num = self.numerator
+        den = self.denominator
+        num = num.abs_integer().trans_in_natural()
+        comp = num.cmp_of_natural_number(den)
+
+        if comp == 0:
+            return True
+
+        if comp == 1:
+            return False
+
+        if comp == 2:
+            while num.cmp_of_natural_number(den) == 2:
+                den = den.__add__(den)
+            if num.cmp_of_natural_number(den) == 0:
+                return True
+            else:
+                return False
 
 
 class Polynomial:
@@ -385,7 +449,9 @@ class Polynomial:
 
         # Возвращаем полином, умноженный на одночлен.
         return polynomial
-
+        
+    
+    
     def __str__(self):
         result = ''
         for i in range(len(self.coefficients) - 1, - 1, -1):
@@ -398,7 +464,22 @@ class Polynomial:
         if result[0] == '+':
             result = result[1:]
         return result
-
+     
+    def pol_derivative(self):
+        '''
+            DER_P_P
+            Возвращает производную многочлена.
+        '''
+        coeffs = self.coefficients[1:]
+        new_coeffs = []
+        deg = 1
+        for coef in coeffs:
+            value = coef.numerator.abs_integer().trans_in_natural().multiplication_by_digit(deg).values
+            Int_coef = Integers(len(value), value, coef.numerator.sign)
+            coef = Rational([Int_coef, coef.denominator])
+            new_coeffs.append(coef)
+            deg += 1
+        return Polynomial([self.degree.multiplication_by_digit(1), new_coeffs])
 
 def input_natural():
     print("Введите натуральое число:", end=' ')

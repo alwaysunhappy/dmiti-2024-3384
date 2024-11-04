@@ -317,3 +317,57 @@ def test_trans_from_rational_in_integer(
             str(rational.trans_in_integer())
     else:
         assert str(rational.trans_in_integer()) == expected
+        
+@pytest.mark.parametrize("numerator, denominator, sign, expected_answer", [
+                             ([1, 2], [6], True, True),
+                             ([1, 0, 2], [5, 1], False, True),
+                             ([1, 5, 0], [4, 9], False, False)
+                         ])
+def test_Int_check_Rational(numerator, denominator, sign, expected_answer):
+    rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
+    assert rational.Int_check() == expected_answer
+
+@pytest.mark.parametrize("num1, num2, expected_values, expected_sign", [
+    (50, 25, [2, 5], False),    
+    (25, 50, [2, 5], True),    
+    (-50, -25, [2, 5], True),  
+    (-25, -50, [2, 5], False),  
+    (50, -25, [7, 5], False),   
+    (-25, 50, [7, 5], True),   
+    (25, 25, [0], False),     
+    (-25, -25, [0], False),    
+    (0, 50, [5, 0], True),      
+    (50, 0, [5, 0], False),     
+    (0, 0, [0], False) 
+])
+def test_subtraction_integers(num1, num2, expected_values, expected_sign):
+
+    num1_obj = Integers(len(str(abs(num1))), [int(i) for i in str(abs(num1))], num1 < 0)
+    num2_obj = Integers(len(str(abs(num2))), [int(i) for i in str(abs(num2))], num2 < 0)
+
+    result = num1_obj.subtraction_integers(num2_obj)
+    
+    assert result.values == expected_values
+    assert result.sign == expected_sign
+
+
+@pytest.mark.parametrize("coeff, degree, k, expected_coeff", [
+    (['-37/11', '53/7', '23/9'], '3', '2', ['53/7', '46/9']),
+    (['283/12', '1/3', '4/7', '2/1'], '4', '0', ['1/3', '8/7', '6/1'])
+])
+def test_div_pol(coeff, degree, k, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = list(map(str, polynomial.pol_derivative().coefficients))
+    assert result == expected_coeff
