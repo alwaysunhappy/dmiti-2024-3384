@@ -50,6 +50,17 @@ def test_cmp_of_natural_number(num1, num2, expected):
     num2 = create_natural(num2)
     assert num1.cmp_of_natural_number(num2) == expected
 
+@pytest.mark.parametrize("num, expected_num", [
+    (100, 101),
+    (1, 2),
+    (1234, 1235),
+    (999, 1000)
+])
+def test_ADD_1N_N(num, expected_num):
+    natural = Natural(len(str(num)), [int(i) for i in str(num)])
+    natural = natural.increment()
+    assert int(str(natural)) == expected_num
+
 
 @pytest.mark.parametrize("num1, num2, expected", [
     ([9, 9, 9], [1], [1, 0, 0, 0]),
@@ -108,6 +119,19 @@ def test_abs_integer(num, expected):
     integers = create_integer(num, sign)
     assert integers.abs_integer().values == expected
 
+@pytest.mark.parametrize("num, expected_num", [
+    (-100, 100),
+    (0, 0),
+    (1, -1)
+])
+def test_MUL_ZM_Z(num, expected_num):
+    abs_num = num * (-1) if num < 0 else num
+    list_of_num = [int(i) for i in str(abs_num)]
+    sign = False if num >= 0 else True
+    integer = Integers(len(list_of_num), list_of_num, sign)
+    integer = integer.invert_sign()
+    assert str(integer) == str(expected_num) 
+
 
 @pytest.mark.parametrize("numerator, denominator, sign, expected_numerator_n, expected_numerator_values, "
                          "expected_denominator_n, expected_denominator_values", [
@@ -122,7 +146,18 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
-    
+
+  
+@pytest.mark.parametrize("num , expected", [
+    (123 , 2),
+    (0, 0),
+    (321 , 2),
+    (-1000 , 1),
+    (-63943 , 1),
+])
+def test_check_sign(num, expected):
+    assert Integers(len(str(num)) if num>=0 else len(str(num))-1 , [int(i) for i in str(num) if i!= '-'] , True if num<0 else False).check_sign() == expected
+
 
 @pytest.mark.parametrize("degree, array_coef, expected", [
     (5, [[0], [1], [2], [3], [4], [5]], 5),
@@ -138,3 +173,90 @@ def test_degree_polynomial(degree, array_coef, expected):
         array_coef[i] = create_integer(array_coef[i], False)
         new_coefficients[i] = create_rational(array_coef[i], denominator)
     assert Polynomial([degree, new_coefficients]).degree_polynomial().values == [expected]
+
+@pytest.mark.parametrize("coeff, degree, k, expected_coeff", [
+    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1' ,'-37/11', '53/7', '23/9']),
+    (['283/12', '1/3', '4/7', '2/1'], '4', '0', ['283/12', '1/3', '4/7', '2/1'])
+])  
+def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = polynomial.multiply_by_monomial(Natural(len(k), [int(i) for i in k]))
+    result_list = [str(i) for i in result.coefficients]
+    assert result_list == expected_coeff
+
+@pytest.mark.parametrize("natural, sign, expected, expected_exception", [
+    (Natural(2, [1, 8]), True, "- 18", None),
+    (Natural(2, [1, 8]), False, "18", None),
+    (Natural(3, [0, 0, 5]), True, "- 005", None),
+    (Natural(3, [0, 0, 5]), False, "005", None),
+    (Natural(1, [0]), True, None, ValueError),
+    (Natural(3, [0, 0, 0]), True, None, ValueError),
+    (Natural(3, [0, 0, 0]), False, "000", None),
+    (Integers(2, [1, 8], True), False, "18", None),
+])
+def test_trans_from_natural_in_integer(
+    natural: Natural, sign: bool, expected: str, expected_exception: Exception
+):
+    if expected_exception:
+        with pytest.raises(expected_exception):
+            str(natural.trans_in_integer(sign))
+    else:
+        assert str(natural.trans_in_integer(sign)) == expected
+
+@pytest.mark.parametrize("integer, expected, expected_exception", [
+    (Integers(2, [1, 8], False), "18", None),
+    (Integers(1, [0], False), "0", None),
+    (Integers(3, [0, 0, 5], False), "005", None),
+    (Integers(3, [0, 0, 0], False), "000", None),
+    (Integers(2, [1, 8], True), None, ValueError),
+])
+def test_trans_from_integer_in_natural(
+    integer: Integers, expected: str, expected_exception: Exception
+):
+    if expected_exception:
+        with pytest.raises(expected_exception):
+            str(integer.trans_in_natural())
+    else:
+        assert str(integer.trans_in_natural()) == expected
+
+@pytest.mark.parametrize("integer, expected", [
+    (Integers(2, [1, 8], False), "18/1"),
+    (Integers(2, [1, 8], True), "- 18/1"),
+    (Integers(1, [0], False), "0/1"),
+    (Integers(3, [0, 0, 5], False), "005/1"),
+    (Integers(3, [0, 0, 5], True), "- 005/1"),
+    (Integers(3, [0, 0, 0], False), "000/1"),
+])
+def test_trans_from_integer_in_rational(
+    integer: Integers, expected: str
+):
+    assert str(integer.trans_in_rational()) == expected
+
+@pytest.mark.parametrize("rational, expected, expected_exception", [
+    (Rational([Integers(2, [2, 3], False), Natural(1, [1])]), "23", None),
+    (Rational([Integers(2, [2, 3], True), Natural(1, [1])]), "- 23", None),
+    (Rational([Integers(1, [0], False), Natural(1, [1])]), "0", None),
+    (Rational([Integers(2, [2, 3], False), Natural(1, [4])]), None, ValueError),
+    (Rational([Integers(2, [2, 3], True), Natural(1, [4])]), None, ValueError),
+    (Rational([Integers(2, [2, 3], False), Natural(1, [0])]), None, ValueError),
+])
+def test_trans_from_rational_in_integer(
+    rational: Rational, expected: str, expected_exception: Exception
+):
+    if expected_exception:
+        with pytest.raises(expected_exception):
+            str(rational.trans_in_integer())
+    else:
+        assert str(rational.trans_in_integer()) == expected

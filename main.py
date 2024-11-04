@@ -6,6 +6,7 @@ class Natural:
             n: Длина массива, представляющего натуральное число.
             values: Массив цифр натурального числа.
     """
+
     def __init__(self, n: int, values: list[int]):
         if n != len(values) or n == 0 or len(values) == 0:
             raise ValueError("Неправильная длина числа!")
@@ -32,7 +33,7 @@ class Natural:
             MUL_ND_N
             Умножение натурального числа на цифру
         """
-        answer = [0] * (self.n + 1) # Создаем список нулей длиной n + 1 для хранения результата
+        answer = [0] * (self.n + 1)  # Создаем список нулей длиной n + 1 для хранения результата
         shift = 0  # перенос в следующий разряд
         for i in range(1, self.n + 2):
             # Если индекс разряда i меньше или равен длине натурального числа
@@ -66,6 +67,33 @@ class Natural:
                 elif self.values[i] < other.values[i]:
                     return 1
         return 0
+
+    def increment(self):
+        """
+            ADD_1N_N
+            Добавление 1 к натуральному числу
+        """
+        number = self.copy()
+        # Начинаем с последней цифры, увеличивая её на 1
+        shift = (number.values[number.n - 1] + 1) // 10  # Определяем, потребуется ли перенос
+        number.values[number.n - 1] = (number.values[number.n - 1] + 1) % 10  # Обновляем последнюю цифру
+
+        # Если перенос остался после изменения последней цифры, идем по остальным разрядам
+        if shift != 0:
+            for index in range(number.n - 2, -1, -1):  # Проходим от предпоследнего элемента к первому
+                num = number.values[index]  # Берем значение текущего разряда
+                number.values[index] = (num + shift) % 10  # Добавляем перенос и записываем результат в текущий разряд
+                shift = (num + shift) // 10  # Пересчитываем перенос для следующего разряда
+
+                # Если перенос больше не нужен, выходим из цикла
+                if shift == 0:
+                    break
+
+        # Если перенос остался после обработки всех разрядов, добавляем его в старший разряд
+        if shift == 1:
+            number.values.insert(0, 1)  # Вставляем 1 в начало массива, чтобы отразить перенос
+            number.n += 1  # Увеличиваем длину числа, так как добавился новый разряд
+        return number
 
     def __add__(self, other):
         """
@@ -130,6 +158,13 @@ class Natural:
         natural = create_natural(answer)
         natural.del_leader_zero()
         return natural
+
+    def trans_in_integer(self, sign: bool = False):
+        """
+        TRANS_N_Z
+        Преобразование натурального в целое
+        """
+        return Integers(self.n, self.values.copy(), sign)
     
     def __str__(self):
         return "".join(list(map(str, self.values)))
@@ -147,9 +182,28 @@ class Integers(Natural):
       sign: Булевый флаг, указывающий знак числа.
          True - отрицательное число, False - положительное.
     """
+
     def __init__(self, n: int, values: list[int], sign: bool):
+        if sign == True and all([i == 0 for i in values]):
+            raise ValueError("Нуль не может быть быть отрицательным!")
         super().__init__(n, values)
         self.sign = sign  # знак числа, если True, то минус
+
+    def copy(self):
+        # Создает и возвращает новый объект Integers, копируя значения текущего объекта
+        return Integers(self.n, self.values.copy(), self.sign)
+
+    def check_sign(self):
+        """
+        POZ_Z_D
+        Определение положительности числа. (0-число равно 0, 1 - отрицательное, 2 - положительное)
+        """
+        if (self.n == 1 and self.values[0] == 0):  # Проверяем, является ли число нулем
+            return 0
+        else:
+            if not (self.sign):  # Проверем отрицательное (sign = true) число или нет
+                return 2
+            return 1
 
     def abs_integer(self):
         """
@@ -160,6 +214,34 @@ class Integers(Natural):
             self.sign = False  # если знак числа минус, то меняем знак на положительный
         return self  # выводим получившиеся число
 
+    def invert_sign(self):
+        """"
+            MUL_ZM_Z
+            Умножение целого на (-1)
+        """
+        number = self.copy()
+        # Инвертирует знак текущего объекта, если он не равен 0 (если был False, станет True, и наоборот)
+        if number.values != [0]:
+            number.sign = (number.sign == False)
+        # Возвращает текущий объект с инвертированным знаком
+        return number
+
+    def trans_in_natural(self):
+        """
+        TRANS_Z_N
+        Преобразование целого неотрицательного в натуральное
+        """
+        if self.sign == True:
+            raise ValueError("Число не может быть отрицательное!")
+        return Natural(self.n, self.values.copy())
+    
+    def trans_in_rational(self):
+        """
+        TRANS_Q_Z
+        Преобразование целого в дробное
+        """
+        return Rational([self.copy(), Natural(1, [1])])
+        
     def __str__(self):
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
@@ -176,10 +258,20 @@ class Rational:
       numerator: Объект класса Integers, представляющий числитель дроби.
       denominator: Объект класса Natural, представляющий знаменатель дроби.
     """
+
     def __init__(self, array_rational: list[Integers, Natural]):
         self.numerator = array_rational[0]  # числитель дроби
         self.denominator = array_rational[1]  # знаменатель дроби
 
+    def copy(self):
+        # Создает и возвращает новый объект Rational, копируя значения текущего объекта
+        return Rational([self.numerator.copy(), self.denominator.copy()])
+
+    def trans_in_integer(self):
+        if self.denominator.values != [1]:
+            raise ValueError("Знаменатель должен быть единицой!")
+        return self.numerator.copy()
+    
     def __str__(self):
         return self.numerator.__str__() + "/" + self.denominator.__str__()
 
@@ -196,9 +288,14 @@ class Polynomial:
       coefficients: Список объектов класса Rational, представляющий
              коэффициенты многочлена.
     """
+
     def __init__(self, array_polynomial: list[Natural, list[Rational]]):
         self.degree = array_polynomial[0]  # степень многочлена
         self.coefficients = array_polynomial[1]  # коэффиценты многочлена
+
+    def copy(self):
+        # Создает и возвращает новый объект Polynomial, копируя значения текущего объекта
+        return Polynomial([self.degree.copy(), self.coefficients.copy()])
 
     def degree_polynomial(self):
         """
@@ -206,6 +303,34 @@ class Polynomial:
         Функция возвращает степень многочлена
         """
         return self.degree  # возвращает степень многочлена
+
+    def multiply_by_monomial(self, k):
+        """
+        MUL_Pxk_P
+        Умножение многочлена на x^k, k-натуральное или 0
+        """
+        # Создаем копию текущего полинома, чтобы не изменять оригинал.
+        polynomial = self.copy()
+
+        # Устанавливаем степень полинома равной k.
+        polynomial.degree = k
+
+        # Создаем объект Natural, представляющий число 1.
+        one = Natural(1, [1])
+
+        # Создаем копию k, чтобы не изменять оригинальное значение.
+        k = k.copy()
+
+        # Пока k не равно 0, добавляем нулевые коэффициенты в начало списка коэффициентов полинома.
+        while k.cmp_of_natural_number(Natural(1, [0])) != 0:
+            # Добавляем нулевой коэффициент в начало списка коэффициентов.
+            polynomial.coefficients.insert(0, Rational([Integers(1, [0], False), one]))
+
+            # Уменьшаем k на 1.
+            k = k - one
+
+        # Возвращаем полином, умноженный на одночлен.
+        return polynomial
 
     def __str__(self):
         result = ''
@@ -315,7 +440,6 @@ class Launch:
             natural = input_natural()
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
-
 
 
 if __name__ == "__main__":
