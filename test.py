@@ -132,14 +132,61 @@ def test_number_is_not_zero(num, expected):
 
 
 @pytest.mark.parametrize("num, k , expected", [
-    (1232, 5, [int(i) for i in str(1232)] + [0] * 5),
-    (12312, 0, [int(i) for i in str(12312)] + [0] * 0),
-    (1231123232, 3, [int(i) for i in str(1231123232)] + [0] * 3),
-    (0, 2, [0]),
-    (12312545, 4, [int(i) for i in str(12312545)] + [0] * 4),
+    (1232, [5], [int(i) for i in str(1232)] + [0] * 5),
+    (12312, [0], [int(i) for i in str(12312)] + [0] * 0),
+    (1231123232, [3], [int(i) for i in str(1231123232)] + [0] * 3),
+    (0, [2], [0]),
+    (12312545, [4], [int(i) for i in str(12312545)] + [0] * 4),
 ])
 def test_multiply_by_ten(num, k, expected):
-    assert Natural(len(str(num)), [int(i) for i in str(num)]).multiply_by_ten(k).values == expected
+    assert Natural(len(str(num)), [int(i) for i in str(num)]).multiply_by_ten(create_natural(k)).values == expected
+
+
+@pytest.mark.parametrize("num1, num2,expected", [
+    (9999, 21, [4, 0, 0]),
+    (456, 20, [2, 0]),
+    (0, 53, [0]),
+    (45456, 8765, [5]),
+    (10000, 10, [1, 0, 0, 0])
+])
+def test_first_digit__of_scaled_division(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.first_digit__of_scaled_division(num2)
+    assert result.values == expected
+
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [4, 7, 6, 1, 9, 0]),
+    (145, 145, [1]),
+    (34, 128, [0]),
+    (7877845, 54, [1, 4, 5, 8, 8, 6]),
+])
+def test_div_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.div_natural(num2)
+    assert result.values == expected
+
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [9]),
+    (145, 145, [0]),
+    (34, 128, [3, 4]),
+    (7877845, 54, [1]),
+    (77773, 7, [3])
+])
+def test_mod_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.mod_natural(num2)
+    assert result.values == expected
 
 
 @pytest.mark.parametrize("num, sign, expected_n, expected_values, expected_sign", [

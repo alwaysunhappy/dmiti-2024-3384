@@ -174,12 +174,15 @@ class Natural:
         MUL_Nk_N
         Функция умножения натурального числа на 10^k
         """
-        if not(self.number_is_not_zero()):
+        if not (self.number_is_not_zero()):
             return self
-        res = self.copy() #создаем копию числа
-        res.values = res.values + [0] * k #добавляем в конец числа k 0
-        res.n += k #увеличиваем длину на k
-        return res
+        natural = self.copy()  # создаем копию числа
+        degree = k.copy()
+        while degree.values != [0]:
+            natural.values.append(0)
+            natural.n += 1
+            degree = degree.__sub__(create_natural([1]))
+        return natural
 
     def __mul__(self,other):
         """
@@ -196,12 +199,12 @@ class Natural:
             larger_number = other.copy()
 
         res = Natural(1,[0])
-        k = 0
+        k = create_natural([0])
         for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
             tmp = larger_number.multiplication_by_digit(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
             res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
-            k += 1
+            k += create_natural([1])
         return res
 
     def trans_in_integer(self, sign: bool = False):
@@ -218,7 +221,65 @@ class Natural:
         """
         mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
         if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
-            return self.__sub__(mul) # вычитание 
+            return self.__sub__(mul) # вычитание
+
+    def first_digit__of_scaled_division(self, other):
+        """
+        Вычисление первой цифры деления большего натурального на меньшее, домноженное на 10^k,
+        где k - номер позиции этой цифры (номер считается с нуля)
+        DIV_NN_Dk
+        """
+        if other.number_is_not_zero() is False:
+            raise ZeroDivisionError
+        larger_number, smaller_number = self.copy(), other.copy()
+        #  уменьшаем количество разрядов большего числа до количества разрядов второго
+        larger_number.values = larger_number.values[:smaller_number.n]
+        # если меньшее число оказалось больше после уменьшение кол-ва разрядов большего, добавляем еще один разряд
+        if larger_number.values[0] < smaller_number.values[0]:
+            larger_number.values = self.values[:smaller_number.n+1]
+        larger_number.n = len(larger_number.values)  # обновили длину большего
+        # находим k
+        k = create_natural([int(i) for i in str(self.n - larger_number.n)])
+        answer = create_natural([0])
+        # находим первую цифру при делении большего на меньшее
+        while larger_number.cmp_of_natural_number(smaller_number) != 1:
+            larger_number = larger_number.__sub__(smaller_number)
+            answer += create_natural([1])
+        #  умножаем найденную первую цифру на 10^k
+        return answer.multiply_by_ten(k)
+
+    def div_natural(self, other):
+        """
+        Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
+        DIV_NN_N
+        """
+        larger_number, smaller_number = self.copy(), other.copy()
+        if other.number_is_not_zero() is False:
+            raise ZeroDivisionError
+        answer = create_natural([0])
+        #  пока larger_number >= smaller_number
+        while larger_number.cmp_of_natural_number(smaller_number) != 1:
+            # получаем первую цифру частного, домноженную на 10^k
+            first_digit_with_zeros = larger_number.first_digit__of_scaled_division(smaller_number)
+            #  вычитаем из делимого полученного значение, умноженное на делитель
+            larger_number = larger_number.__sub__(first_digit_with_zeros.__mul__(smaller_number))
+            #  увеличиваем ответ
+            answer = answer.__add__(first_digit_with_zeros)
+        return answer
+
+    def mod_natural(self, other):
+        """
+        Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
+        MOD_NN_N
+        """
+        larger_number, smaller_number = self.copy(), other.copy()
+        if other.number_is_not_zero() is False:
+            raise ZeroDivisionError
+        # остаток можно выразить из формулы larger_number = mod(larger_number, smaller_number) + div(larger_number,
+        # smaller_number) * smaller_number
+        result_div = larger_number.div_natural(smaller_number)  # получили неполное частное
+        result_mul = result_div.__mul__(smaller_number)  # домножили на делитель
+        return larger_number.__sub__(result_mul)  # вернули остаток от деления
     
     def __str__(self):
         return "".join(list(map(str, self.values)))
