@@ -119,10 +119,36 @@ def test_abs_integer(num, expected):
     integers = create_integer(num, sign)
     assert integers.abs_integer().values == expected
 
+@pytest.mark.parametrize("first_num, second_num, expected_num", [
+    (-111, 111, '0'),
+    (-239, 300, '61'),
+    (-239, -100, '- 339'),
+    (1, 999, '1000'),
+    (250, -150, '100'),
+    (100, -399, '- 299')
+])
+def test_ADD_ZZ_Z(first_num, second_num, expected_num):
+    abs_num1 = first_num * (-1) if first_num < 0 else first_num
+    abs_num2 = second_num * (-1) if second_num < 0 else second_num
+    list_of_num1 = [int(i) for i in str(abs_num1)]
+    list_of_num2 = [int(i) for i in str(abs_num2)]
+    sign1 = False if first_num >= 0 else True
+    sign2 = False if second_num >= 0 else True
+    integer1 = Integers(len(list_of_num1), list_of_num1, sign1)
+    integer2 = Integers(len(list_of_num2), list_of_num2, sign2)
+    result = integer1 + integer2
+    assert str(result) == expected_num
+
+
+
+            
+def make_Natural(num):
+    return Natural(len(num), [int(i) for i in str(num)])
+
 @pytest.mark.parametrize("num, expected_num", [
     (-100, 100),
     (0, 0),
-    (1, -1)
+    (1, '- 1')
 ])
 def test_MUL_ZM_Z(num, expected_num):
     abs_num = num * (-1) if num < 0 else num
@@ -175,7 +201,7 @@ def test_degree_polynomial(degree, array_coef, expected):
     assert Polynomial([degree, new_coefficients]).degree_polynomial().values == [expected]
 
 @pytest.mark.parametrize("coeff, degree, k, expected_coeff", [
-    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1' ,'-37/11', '53/7', '23/9']),
+    (['-37/11', '53/7', '23/9'], '3', '2', ['0/1', '0/1' ,'- 37/11', '53/7', '23/9']),
     (['283/12', '1/3', '4/7', '2/1'], '4', '0', ['283/12', '1/3', '4/7', '2/1'])
 ])  
 def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):

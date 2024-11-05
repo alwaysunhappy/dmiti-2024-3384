@@ -216,6 +216,32 @@ class Integers(Natural):
             number.sign = (number.sign == False)
         # Возвращает текущий объект с инвертированным знаком
         return number
+    
+    def __add__(self, other):
+        """"
+            ADD_ZZ_Z
+            Сложение целых чисел
+        """
+        integer_first = self.copy()
+        integer_second = other.copy()
+        # Проверяет, совпадают ли знаки обоих объектов
+        if integer_first.sign == integer_second.sign:
+            # Если знаки совпадают, выполняет сложение и возвращает новый объект с тем же знаком
+            result = Natural.__add__(integer_first, integer_second)
+            return Integers(result.n, result.values, integer_first.sign) 
+        # Если знаки не совпадают, сравнивает абсолютные значения чисел
+        elif integer_first.cmp_of_natural_number(integer_second) == 2:
+            # Если текущий объект больше по абсолютной величине, выполняет вычитание
+            result = Natural.__sub__(integer_first, integer_second)
+            # Определяет знак результата (оставляет знак текущего объекта, если результат не равен нулю)
+            sign = integer_first.sign if result.values != [0] else False
+            return Integers(result.n, result.values, sign) 
+        else:
+            # Если текущий объект меньше по абсолютной величине, выполняет вычитание
+            result = Natural.__sub__(integer_second, integer_first)
+            # Определяет знак результата (оставляет знак другого объекта, если результат не равен нулю)
+            sign = integer_second.sign if result.values != [0] else False
+            return Integers(result.n, result.values, sign)
 
     def __str__(self):
         sign = "- " if self.sign else ""
