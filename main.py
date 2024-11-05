@@ -217,9 +217,100 @@ class Natural:
         Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
         """
         mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
-        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
-            return self.__sub__(mul) # вычитание 
-    
+        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычитании будет неотрицательный результат
+            return self.__sub__(mul) # вычитание
+
+    def firstDigitOfScaledDivision(self, other, k):
+        """
+        Вычисление первой цифры деления большего натурального на меньшее, домноженное на 10^k,
+        где k - номер позиции этой цифры (номер считается с нуля)
+        DIV_NN_Dk
+        """
+        # умножение меньшего число на 10^k
+        if k != 0:
+            scaled_num = other.multiply_by_ten(k)
+        else:
+            scaled_num = other
+        num = self
+        reminder = num
+        first_digit = 0
+        ans = [0]
+        if self.cmp_of_natural_number(scaled_num) != 1:
+            """if num.n > scaled_num.n:
+                x = num.n - scaled_num.n
+                scaled_num = scaled_num.multiply_by_ten(x - 1)
+                """
+            while reminder.cmp_of_natural_number(scaled_num) != 1: #вычисление первой цифры деления
+                reminder = reminder.__sub__(scaled_num)
+                first_digit += 1
+                reminder.del_leader_zero()
+
+            if first_digit > 9: # в случае если получилась не цифра, а число, то берётся цифра десятков
+                first_digit = first_digit - 10
+                ans[0] += 1
+            else:
+                ans[0] = first_digit
+
+        fir_digit = create_natural(ans)
+        fir_digit.del_leader_zero()
+        return fir_digit
+
+    def div_natural(self, other):
+        """
+        Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
+        DIV_NN_N
+        """
+        num = self
+        quot = []
+        scaled_mul_dig = 0
+        # если второе число больше первого, то частное = 0
+        if num.cmp_of_natural_number(other) == 1:
+            quot.append(0)
+        # если числа равны, то частное = 1
+        if num.cmp_of_natural_number(other) == 0:
+            quot.append(1)
+        # вычисление частного, если первое число больше второго
+        if num.cmp_of_natural_number(other) == 2:
+            k = num.n - other.n + 1
+            while num.cmp_of_natural_number(other) != 1: # выполняется пока остаток не будет меньше второго число
+                k -= 1
+                digit = num.firstDigitOfScaledDivision(other, k) # первая цифра деления остатка на второе число
+                quot.append(digit.values[0])
+                mul_dig = other.multiplication_by_digit(digit.values[0]) # цифра умноженная на второе число
+                # вычисление разницы между первым числом и цифрой, умноженной на второе число
+                if num.n > mul_dig.n:
+                    x = num.n - mul_dig.n
+                    scaled_mul_dig = mul_dig.multiply_by_ten(x)
+                if num.n == mul_dig.n:
+                    scaled_mul_dig = mul_dig
+                num = num.__sub__(scaled_mul_dig)
+            # добавление недостающих нулей
+            for i in range(0, k):
+                quot.append(0)
+
+        quotient = create_natural(quot)
+        quotient.del_leader_zero()
+        return quotient
+
+    def mod_natural(self, other):
+        """
+        Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
+        MOD_NN_N
+        """
+        num_div = self.div_natural(other) # нахождение частного
+        copy_self = self
+        #вычисление остатка
+        for i in range(0, num_div.n):
+            digit = num_div.values[num_div.n - 1 - i]
+            dig_oth = other.multiplication_by_digit(digit)  # digit * other
+            if i != 0:
+                sub_dig_oth = dig_oth.multiply_by_ten(i)  # digit * other * 10 в степени порядка
+            else:
+                sub_dig_oth = dig_oth
+            # вычитание из остатка sub_dig_oth
+            copy_self = copy_self.subtract_scaled_natural(sub_dig_oth, 1)
+        return copy_self
+
     def __str__(self):
         return "".join(list(map(str, self.values)))
 
@@ -575,6 +666,24 @@ class Launch:
             natural = input_natural()
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
+
+        if self.number == 7:
+            natural = input_natural()
+            natural_k = int(input("Введите степень 10: "))
+            print(natural.multiply_by_ten(natural_k))
+        if self.number == 10:
+            natural = input_natural()
+            natural_second = input_natural()
+            natural_k = int(input("Введите степень 10: "))
+            print(natural.firstDigitOfScaledDivision(natural_second, natural_k))
+        if self.number == 11:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.div_natural(natural_second))
+        if self.number == 12:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.mod_natural(natural_second))
 
 
 if __name__ == "__main__":

@@ -81,6 +81,50 @@ def test_subtract_scaled_natural(num1, num2, number, expected):
     result = num1.subtract_scaled_natural(num2, number)
     assert result.values == expected
 
+@pytest.mark.parametrize("num1, num2, number, expected", [
+    (9999, 21, 2, [4]),
+    (456, 20, 3, [0]),
+    (0, 53, 1, [0]),
+    (45456, 8765, 0, [5]),
+    (10000, 10, 2,[1])
+])
+def test_firstDigitOfScaledDivision(num1, num2, number, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.firstDigitOfScaledDivision(num2, number)
+    assert result.values == expected
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [4, 7, 6, 1, 9, 0]),
+    (145,145,[1]),
+    (34, 128, [0]),
+    (7877845, 54, [1, 4, 5, 8, 8, 6]),
+])
+def test_div_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.div_natural(num2)
+    assert result.values == expected
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [9]),
+    (145,145,[0]),
+    (34, 128, [3, 4]),
+    (7877845, 54, [1]),
+    (77773, 7, [3])
+])
+def test_mod_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.mod_natural(num2)
+    assert result.values == expected
+
 
 @pytest.mark.parametrize("num, expected_num", [
     (100, 101),
