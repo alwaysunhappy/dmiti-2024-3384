@@ -371,3 +371,27 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
     result = list(map(str, polynomial.pol_derivative().coefficients))
     assert result == expected_coeff
+
+@pytest.mark.parametrize("num1, num2, expected_nod", [
+    ([9, 9, 9, 9], [2, 1], [3]),
+    ([4, 5, 6], [2, 0], [4]),
+    ([4, 5, 4, 5, 6], [8, 7, 6, 5], [1]),
+    ([1, 0, 0], [2, 0], [2, 0])
+])
+def test_gcd_natural(num1, num2, expected_nod):
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+
+    result = num1.gcf_natural(num2)
+    assert result.values == expected_nod
+
+@pytest.mark.parametrize("num1, num2, expected_nod", [
+    ([1, 8], [4, 8], [1, 4, 4]),
+    ([4], [5, 5], [2, 2, 0])
+])
+def test_lmc_natural(num1, num2, expected_nod):
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+
+    result = num1.lmc_natural(num2)
+    assert result.values == expected_nod

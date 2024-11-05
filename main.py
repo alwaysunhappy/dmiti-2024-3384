@@ -222,7 +222,29 @@ class Natural:
     
     def __str__(self):
         return "".join(list(map(str, self.values)))
+    
+    def gcf_natural(self, other):
+        """
+        GCF_NN_N
+        Вычисление наибольшего общего делителя двух натуральных чисел.
+        """
+        a, b = self, other
 
+        # Пока одно из чисел не станет нулем
+        while b.number_is_not_zero():
+            remainder = a.mod_natural(b)
+            if not remainder.number_is_not_zero():  # если остаток равен нулю
+                return b  # возвращаем делитель, так как a делится на b
+            a, b = b, remainder
+
+        return a
+
+    def lmc_natural(self, other):
+        """
+        LCM_NN_N
+        НОК натуральных чисел.
+        """
+        return self.__mul__(other).div_natural(self.gcf_natural(other))
 
 class Integers(Natural):
     """
