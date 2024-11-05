@@ -480,6 +480,17 @@ class Polynomial:
             new_coeffs.append(coef)
             deg += 1
         return Polynomial([self.degree.multiplication_by_digit(1), new_coeffs])
+    
+    def leading_coefficient(self):
+        """
+        LED_P_Q
+        Возвращает старший коэффициент многочлена.
+        """
+        # Ищем первый ненулевой коэффициент, начиная с конца списка
+        for coefficient in reversed(self.coefficients):
+            if coefficient.numerator.values != [0]:  # проверяем, что коэффициент не равен нулю
+                return str(coefficient)
+        return None  # возвращаем None, если все коэффициенты нулевые
 
 def input_natural():
     print("Введите натуральое число:", end=' ')

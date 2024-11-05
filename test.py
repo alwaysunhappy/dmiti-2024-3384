@@ -371,3 +371,27 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
     result = list(map(str, polynomial.pol_derivative().coefficients))
     assert result == expected_coeff
+
+
+@pytest.mark.parametrize("coeff, degree, expected_coeff", [
+    (['0/1', '3/7', '4/5'], '2', '4/5'),
+    (['40/1', '3/5', '31/5', '0/1'], '3', '31/5'),
+    (['4/6', '9/4', '5/3', '-37/9'], '3', '- 37/9'),
+    (['0/1', '0/1', '0/1'], '2', None)
+])
+def test_leading_coefficient(coeff, degree, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = polynomial.leading_coefficient()
+    assert result == expected_coeff
