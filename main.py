@@ -425,6 +425,23 @@ class Integers(Natural):
 
         return result
 
+    def __mul__(self, other):
+        """"
+        MUL_ZZ_Z
+        Функция для умножения целых чисел.
+        """
+        first_number = self.copy().abs_integer()  # создаем копии чисел, но без знака
+        second_number = other.copy().abs_integer()
+        first_sign = self.sign  # сохраняем знаки исходных чисел
+        second_sign = other.sign
+        if first_sign == second_sign:  # находим знак произведения 2 чисел
+            new_number_sign = False
+        else:
+            new_number_sign = True
+        res = super().__mul__(second_number)  # умножаем используя функцию умножения натуральных
+        res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
+        return res
+
 class Rational:
     """
     Класс, представляющий рациональное число.
@@ -663,4 +680,3 @@ class Launch:
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
-
