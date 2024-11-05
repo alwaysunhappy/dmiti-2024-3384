@@ -254,6 +254,8 @@ class Natural:
         DIV_NN_N
         """
         larger_number, smaller_number = self.copy(), other.copy()
+        if other.number_is_not_zero() is False:
+            raise ZeroDivisionError
         answer = create_natural([0])
         #  пока larger_number >= smaller_number
         while larger_number.cmp_of_natural_number(smaller_number) != 1:
