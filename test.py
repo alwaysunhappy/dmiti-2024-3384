@@ -377,7 +377,7 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     (['0/1', '3/7', '4/5'], '2', '4/5'),
     (['40/1', '3/5', '31/5', '0/1'], '3', '31/5'),
     (['4/6', '9/4', '5/3', '-37/9'], '3', '- 37/9'),
-    (['0/1', '0/1', '0/1'], '2', None)
+    (['0/1', '0/1', '0/1'], '2', 'None')
 ])
 def test_leading_coefficient(coeff, degree, expected_coeff):
     rational_list = []
@@ -394,4 +394,4 @@ def test_leading_coefficient(coeff, degree, expected_coeff):
 
     polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
     result = polynomial.leading_coefficient()
-    assert result == expected_coeff
+    assert str(result) == expected_coeff
