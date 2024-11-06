@@ -601,6 +601,85 @@ def test_lmc_natural(num1, num2, expected_nod):
     result = num1.lmc_natural(num2)
     assert result.values == expected_nod
 
+    
+@pytest.mark.parametrize("fraction1, fraction2, expected_numerator, expected_denominator", [
+    # Обычное вычитание
+    (Rational([Integers(1, [3], False), Natural(1, [4])]),  # 3/4
+     Rational([Integers(1, [1], False), Natural(1, [4])]),  # 1/4
+     Integers(1, [2], False),  # ожидаемый числитель 2
+     Natural(1, [4])),  # ожидаемый знаменатель 4
+
+    # Вычитание с получением отрицательной дроби
+    (Rational([Integers(1, [1], False), Natural(1, [4])]),  # 1/4
+     Rational([Integers(1, [3], False), Natural(1, [4])]),  # 3/4
+     Integers(1, [2], True),  # ожидаемый числитель -2
+     Natural(1, [4])),  # ожидаемый знаменатель 4
+
+    # Приведение к общему знаменателю
+    (Rational([Integers(1, [1], False), Natural(1, [2])]),  # 1/2
+     Rational([Integers(1, [1], False), Natural(1, [3])]),  # 1/3
+     Integers(1, [1], False),  # ожидаемый числитель 1
+     Natural(1, [6])),  # ожидаемый знаменатель 6
+
+    # Вычитание, где результат — ноль
+    (Rational([Integers(1, [1], False), Natural(1, [2])]),  # 1/2
+     Rational([Integers(1, [1], False), Natural(1, [2])]),  # 1/2
+     Integers(1, [0], False),  # ожидаемый числитель 0
+     Natural(1, [1])),  # ожидаемый знаменатель 1 (сокращенный)
+])
+def test_sub_rat(fraction1: Rational, fraction2: Rational, expected_numerator: Integers, expected_denominator: Natural):
+    result = fraction1.sub_rat(fraction2)
+    assert result.numerator.values == expected_numerator.values
+    assert result.denominator.values == expected_denominator.values
+
+@pytest.mark.parametrize("poly1, poly2, expected_coefficients, expected_degree", [
+    # Сложение двух многочленов с одинаковой степенью
+    (Polynomial([Natural(1, [2]),  # Степень многочлена 2
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),   # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),   # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]]), # 3x^2
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [2], False), Natural(1, [1])]),   # 2
+                  Rational([Integers(1, [3], False), Natural(1, [1])]),   # 3x
+                  Rational([Integers(1, [4], False), Natural(1, [1])])]]), # 4x^2
+     [Rational([Integers(1, [3], False), Natural(1, [1])]),               # 1 + 2 = 3
+      Rational([Integers(1, [5], False), Natural(1, [1])]),               # 2 + 3 = 5
+      Rational([Integers(1, [7], False), Natural(1, [1])])],              # 3 + 4 = 7
+     Natural(1, [2])),  # Ожидаемая степень многочлена
+
+    # Сложение многочленов разной степени
+    (Polynomial([Natural(1, [1]),  # Степень многочлена 1
+                 [Rational([Integers(1, [5], False), Natural(1, [1])]),  # 5
+                  Rational([Integers(1, [6], False), Natural(1, [1])])]]),  # 6x
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
+     [Rational([Integers(1, [6], False), Natural(1, [1])]),              # 5 + 1 = 6
+      Rational([Integers(1, [8], False), Natural(1, [1])]),              # 6 + 2 = 8
+      Rational([Integers(1, [3], False), Natural(1, [1])])],             # 0 + 3 = 3
+     Natural(1, [2])),  # Ожидаемая степень многочлена
+
+    # Сложение многочлена с нулевым многочленом
+    (Polynomial([Natural(1, [1]),
+                 [Rational([Integers(1, [0], False), Natural(1, [1])]),  # 0
+                  Rational([Integers(1, [0], False), Natural(1, [1])])]]),  # 0x
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
+     [Rational([Integers(1, [1], False), Natural(1, [1])]),              # 0 + 1 = 1
+      Rational([Integers(1, [2], False), Natural(1, [1])]),              # 0 + 2 = 2
+      Rational([Integers(1, [3], False), Natural(1, [1])])],             # 0 + 3 = 3
+     Natural(1, [2])),  # Ожидаемая степень многочлена
+])
+def test_add_polynomial(poly1, poly2, expected_coefficients, expected_degree):
+    result = poly1.add_pol(poly2)
+    assert result.degree.values == expected_degree.values, "Степень результирующего многочлена неверна"
+    for i, coeff in enumerate(result.coefficients):
+        assert coeff.numerator.values == expected_coefficients[i].numerator.values, f"Числитель коэффициента при степени {i} неверен"
+        assert coeff.denominator.values == expected_coefficients[i].denominator.values
+
 
 @pytest.mark.parametrize("rational, expected", [
     (Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "5/1",),
@@ -628,4 +707,4 @@ def test_fraction_reduction(rational, expected):
 
 def test_fraction_reduction(rational_first, rational_second, expected):
     assert str(rational_first.division_of_fractions(rational_second)) == expected
-
+    
