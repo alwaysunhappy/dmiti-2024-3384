@@ -594,6 +594,29 @@ class Rational:
         first_fraction.denominator = Natural(result.n, result.values)
         first_fraction.numerator.sign = remembered_sign
         return first_fraction
+    
+    def __add__(self, other):
+        """
+            ADD_QQ_Q
+            Сложение дробей
+        """
+        # Находим наименьшее общее кратное (НОК) знаменателей двух дробей.
+        lcm =  self.denominator.lmc_natural(other.denominator)
+        
+        # Вычисляем множители, на которые нужно умножить числители,
+        # чтобы привести дроби к общему знаменателю.
+        
+        multiplier_first = lcm.div_natural(self.denominator).trans_in_integer()
+
+        multiplier_second = lcm.div_natural(other.denominator).trans_in_integer() 
+
+        # Складываем числители, умноженные на соответствующие множители.
+        numerator1 = self.numerator.__mul__(multiplier_first) 
+        numerator2 = other.numerator.__mul__(multiplier_second)
+        result_numerator = numerator1.__add__(numerator2)
+        # Создаем результирующую дробь с полученным числителем и общим знаменателем.
+        result = Rational([result_numerator, lcm])
+        return result
 
 
 class Polynomial:
