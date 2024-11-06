@@ -107,6 +107,35 @@ def test_quotient(number, s_number, expected):
     assert result.__str__() == expected
 
 
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("1/3", "2/3", "2/9"),
+    ("-1/6", "6/1", "- 6/6"),
+    ("0/1", "4/5", "0/5"),
+    ("-1/8", "-10/6", "10/48"),
+    ("15/3", "6/2", "90/6"),
+
+])
+def test_mul_rational(number, s_number, expected):
+    f_numerator, f_denominator = number.split('/')
+    if f_numerator[0] == '-':
+        f_sign = True
+        f_numerator = f_numerator[1:]
+    else:
+        f_sign = False
+    f_numerator = [int(i) for i in f_numerator]
+    f_denominator = [int(i) for i in f_denominator]
+    f_number = create_rational(create_integer(f_numerator, f_sign), create_natural(f_denominator))
+    s_numerator, s_denominator = s_number.split('/')
+    if s_numerator[0] == '-':
+        s_sign = True
+        s_numerator = s_numerator[1:]
+    else:
+        s_sign = False
+    s_numerator = [int(i) for i in s_numerator]
+    s_denominator = [int(i) for i in s_denominator]
+    s_number = create_rational(create_integer(s_numerator, s_sign), create_natural(s_denominator))
+    res = f_number.__mul__(s_number)
+    assert res.__str__() == expected
 
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),

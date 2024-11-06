@@ -527,6 +527,21 @@ class Rational:
             else:
                 return False
 
+    def __mul__(self, other):
+        """"
+        MUL_QQ_Q
+        Функция созданная для умножения дробей.
+        """
+        f_number = self.copy() # Создаем копии чисел
+        s_number = other.copy()
+
+        new_numerator = f_number.numerator.__mul__(s_number.numerator) # Считаем числитель
+        new_denominator = f_number.denominator.__mul__(s_number.denominator) # Считаем знаменатель
+
+        res = Rational([new_numerator , new_denominator]) # Создаем дробь из числителя и знаменателя
+
+        return res
+
 
 class Polynomial:
     """
