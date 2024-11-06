@@ -415,7 +415,7 @@ class Rational:
             else:
                 return False
      
-    def Sub_Rat(self, other):
+    def sub_rat(self, other):
         """
             SUB_QQ_Q
             Вычитание дробей.
@@ -460,7 +460,7 @@ class Polynomial:
         """
         return self.degree  # возвращает степень многочлена
         
-    def Add_Pol(self, other):
+    def add_pol(self, other):
         """
             Add_PP_P.
             Сложение многочленов.

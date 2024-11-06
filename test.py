@@ -421,8 +421,8 @@ def test_lmc_natural(num1, num2, expected_nod):
      Integers(1, [0], False),  # ожидаемый числитель 0
      Natural(1, [1])),  # ожидаемый знаменатель 1 (сокращенный)
 ])
-def test_Sub_Rat(fraction1: Rational, fraction2: Rational, expected_numerator: Integers, expected_denominator: Natural):
-    result = fraction1.Sub_Rat(fraction2)
+def test_sub_rat(fraction1: Rational, fraction2: Rational, expected_numerator: Integers, expected_denominator: Natural):
+    result = fraction1.sub_rat(fraction2)
     assert result.numerator.values == expected_numerator.values
     assert result.denominator.values == expected_denominator.values
 
@@ -468,7 +468,7 @@ def test_Sub_Rat(fraction1: Rational, fraction2: Rational, expected_numerator: I
      Natural(1, [2])),  # Ожидаемая степень многочлена
 ])
 def test_add_polynomial(poly1, poly2, expected_coefficients, expected_degree):
-    result = poly1.Add_Pol(poly2)
+    result = poly1.add_pol(poly2)
     assert result.degree.values == expected_degree.values, "Степень результирующего многочлена неверна"
     for i, coeff in enumerate(result.coefficients):
         assert coeff.numerator.values == expected_coefficients[i].numerator.values, f"Числитель коэффициента при степени {i} неверен"
