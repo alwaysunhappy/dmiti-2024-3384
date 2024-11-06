@@ -106,6 +106,31 @@ def test_div_integer(number, s_number, expected):
     result = integer.div_integer(s_integer)
     assert result.__str__() == expected
 
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("0", "-123123213", "0"),
+    ("865", "-245", "130"),
+    ("-3458374", "5348", "1782"),
+    ("-2413", "-243", "17"),
+    ("123123123", "1254325435", "123123123"),
+
+])
+def test_mod_integer(number, s_number, expected):
+    if number[0] == "-":
+        f_sign = True
+        integer = [int(i) for i in number[1:]]
+    else:
+        f_sign = False
+        integer = [int(i) for i in number]
+    if s_number[0] == "-":
+        s_sign = True
+        s_integer = [int(i) for i in s_number[1:]]
+    else:
+        s_sign = False
+        s_integer = [int(i) for i in s_number]
+    integer = create_integer(integer, f_sign )
+    s_integer = create_integer(s_integer , s_sign)
+    result = integer.mod_integer(s_integer)
+    assert result.__str__() == expected
 
 @pytest.mark.parametrize("number, s_number, expected", [
     ("1/3", "2/3", "2/9"),
