@@ -53,6 +53,90 @@ def test_mul(number, s_number, expected):
     assert result.__str__() == expected
 
 
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("-1233", "3123", "- 3850659"),
+    ("123", "0", "0"),
+    ("-1223433", "-32134123", "39313946504259"),
+    ("12323", "-312", "- 3844776"),
+    ("12133", "31423", "381255259"),
+
+])
+def test_mul_int(number, s_number, expected):
+    if number[0] == "-":
+        f_sign = True
+        integer = [int(i) for i in number[1:]]
+    else:
+        f_sign = False
+        integer = [int(i) for i in number]
+    if s_number[0] == "-":
+        s_sign = True
+        s_integer = [int(i) for i in s_number[1:]]
+    else:
+        s_sign = False
+        s_integer = [int(i) for i in s_number]
+    integer = create_integer(integer, f_sign )
+    s_integer = create_integer(s_integer , s_sign)
+    result = integer.__mul__(s_integer)
+    assert result.__str__() == expected
+
+
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("0", "-123", "0"),
+    ("123", "-123234", "0"),
+    ("-1223433", "-32134123", "0"),
+    ("12323", "-435", "- 28"),
+    ("12132342343243432143243241234124231433", "-21431264532487231546712531232131112", "- 566"),
+
+])
+def test_div_integer(number, s_number, expected):
+    if number[0] == "-":
+        f_sign = True
+        integer = [int(i) for i in number[1:]]
+    else:
+        f_sign = False
+        integer = [int(i) for i in number]
+    if s_number[0] == "-":
+        s_sign = True
+        s_integer = [int(i) for i in s_number[1:]]
+    else:
+        s_sign = False
+        s_integer = [int(i) for i in s_number]
+    integer = create_integer(integer, f_sign )
+    s_integer = create_integer(s_integer , s_sign)
+    result = integer.div_integer(s_integer)
+    assert result.__str__() == expected
+
+
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("1/3", "2/3", "2/9"),
+    ("-1/6", "6/1", "- 6/6"),
+    ("0/1", "4/5", "0/5"),
+    ("-1/8", "-10/6", "10/48"),
+    ("15/3", "6/2", "90/6"),
+
+])
+def test_mul_rational(number, s_number, expected):
+    f_numerator, f_denominator = number.split('/')
+    if f_numerator[0] == '-':
+        f_sign = True
+        f_numerator = f_numerator[1:]
+    else:
+        f_sign = False
+    f_numerator = [int(i) for i in f_numerator]
+    f_denominator = [int(i) for i in f_denominator]
+    f_number = create_rational(create_integer(f_numerator, f_sign), create_natural(f_denominator))
+    s_numerator, s_denominator = s_number.split('/')
+    if s_numerator[0] == '-':
+        s_sign = True
+        s_numerator = s_numerator[1:]
+    else:
+        s_sign = False
+    s_numerator = [int(i) for i in s_numerator]
+    s_denominator = [int(i) for i in s_denominator]
+    s_number = create_rational(create_integer(s_numerator, s_sign), create_natural(s_denominator))
+    res = f_number.__mul__(s_number)
+    assert res.__str__() == expected
+
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),
     (10, 10, 0),
@@ -67,7 +151,7 @@ def test_cmp_of_natural_number(num1, num2, expected):
     num2 = create_natural(num2)
     assert num1.cmp_of_natural_number(num2) == expected
 
-    
+
 @pytest.mark.parametrize("num1, num2, number, expected", [
     (100, 9, 2, [8, 2]),
     (600, 200, 3, [0]),
@@ -132,14 +216,61 @@ def test_number_is_not_zero(num, expected):
 
 
 @pytest.mark.parametrize("num, k , expected", [
-    (1232, 5, [int(i) for i in str(1232)] + [0] * 5),
-    (12312, 0, [int(i) for i in str(12312)] + [0] * 0),
-    (1231123232, 3, [int(i) for i in str(1231123232)] + [0] * 3),
-    (0, 2, [0]),
-    (12312545, 4, [int(i) for i in str(12312545)] + [0] * 4),
+    (1232, [5], [int(i) for i in str(1232)] + [0] * 5),
+    (12312, [0], [int(i) for i in str(12312)] + [0] * 0),
+    (1231123232, [3], [int(i) for i in str(1231123232)] + [0] * 3),
+    (0, [2], [0]),
+    (12312545, [4], [int(i) for i in str(12312545)] + [0] * 4),
 ])
 def test_multiply_by_ten(num, k, expected):
-    assert Natural(len(str(num)), [int(i) for i in str(num)]).multiply_by_ten(k).values == expected
+    assert Natural(len(str(num)), [int(i) for i in str(num)]).multiply_by_ten(create_natural(k)).values == expected
+
+
+@pytest.mark.parametrize("num1, num2,expected", [
+    (9999, 21, [4, 0, 0]),
+    (456, 20, [2, 0]),
+    (0, 53, [0]),
+    (45456, 8765, [5]),
+    (10000, 10, [1, 0, 0, 0])
+])
+def test_first_digit__of_scaled_division(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.first_digit__of_scaled_division(num2)
+    assert result.values == expected
+
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [4, 7, 6, 1, 9, 0]),
+    (145, 145, [1]),
+    (34, 128, [0]),
+    (7877845, 54, [1, 4, 5, 8, 8, 6]),
+])
+def test_div_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.div_natural(num2)
+    assert result.values == expected
+
+
+@pytest.mark.parametrize("num1, num2, expected", [
+    (9999999, 21, [9]),
+    (145, 145, [0]),
+    (34, 128, [3, 4]),
+    (7877845, 54, [1]),
+    (77773, 7, [3])
+])
+def test_mod_natural(num1, num2, expected):
+    num1 = [int(i) for i in str(num1)]
+    num2 = [int(i) for i in str(num2)]
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+    result = num1.mod_natural(num2)
+    assert result.values == expected
 
 
 @pytest.mark.parametrize("num, sign, expected_n, expected_values, expected_sign", [
@@ -172,6 +303,27 @@ def test_abs_integer(num, expected):
     num = [int(i) for i in str_num1]
     integers = create_integer(num, sign)
     assert integers.abs_integer().values == expected
+
+
+@pytest.mark.parametrize("first_num, second_num, expected_num", [
+    (-111, 111, '0'),
+    (-239, 300, '61'),
+    (-239, -100, '- 339'),
+    (1, 999, '1000'),
+    (250, -150, '100'),
+    (100, -399, '- 299')
+])
+def test_ADD_ZZ_Z(first_num, second_num, expected_num):
+    abs_num1 = first_num * (-1) if first_num < 0 else first_num
+    abs_num2 = second_num * (-1) if second_num < 0 else second_num
+    list_of_num1 = [int(i) for i in str(abs_num1)]
+    list_of_num2 = [int(i) for i in str(abs_num2)]
+    sign1 = False if first_num >= 0 else True
+    sign2 = False if second_num >= 0 else True
+    integer1 = Integers(len(list_of_num1), list_of_num1, sign1)
+    integer2 = Integers(len(list_of_num2), list_of_num2, sign2)
+    result = integer1 + integer2
+    assert str(result) == expected_num
 
 
 @pytest.mark.parametrize("num, expected_num", [
@@ -253,6 +405,7 @@ def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
     result_list = [str(i) for i in result.coefficients]
     assert result_list == expected_coeff
 
+
 @pytest.mark.parametrize("natural, sign, expected, expected_exception", [
     (Natural(2, [1, 8]), True, "- 18", None),
     (Natural(2, [1, 8]), False, "18", None),
@@ -264,13 +417,14 @@ def test_MUL_Pxk_P(coeff, degree, k, expected_coeff):
     (Integers(2, [1, 8], True), False, "18", None),
 ])
 def test_trans_from_natural_in_integer(
-    natural: Natural, sign: bool, expected: str, expected_exception: Exception
+        natural: Natural, sign: bool, expected: str, expected_exception: Exception
 ):
     if expected_exception:
         with pytest.raises(expected_exception):
             str(natural.trans_in_integer(sign))
     else:
         assert str(natural.trans_in_integer(sign)) == expected
+
 
 @pytest.mark.parametrize("integer, expected, expected_exception", [
     (Integers(2, [1, 8], False), "18", None),
@@ -280,13 +434,14 @@ def test_trans_from_natural_in_integer(
     (Integers(2, [1, 8], True), None, ValueError),
 ])
 def test_trans_from_integer_in_natural(
-    integer: Integers, expected: str, expected_exception: Exception
+        integer: Integers, expected: str, expected_exception: Exception
 ):
     if expected_exception:
         with pytest.raises(expected_exception):
             str(integer.trans_in_natural())
     else:
         assert str(integer.trans_in_natural()) == expected
+
 
 @pytest.mark.parametrize("integer, expected", [
     (Integers(2, [1, 8], False), "18/1"),
@@ -297,9 +452,10 @@ def test_trans_from_integer_in_natural(
     (Integers(3, [0, 0, 0], False), "000/1"),
 ])
 def test_trans_from_integer_in_rational(
-    integer: Integers, expected: str
+        integer: Integers, expected: str
 ):
     assert str(integer.trans_in_rational()) == expected
+
 
 @pytest.mark.parametrize("rational, expected, expected_exception", [
     (Rational([Integers(2, [2, 3], False), Natural(1, [1])]), "23", None),
@@ -310,43 +466,44 @@ def test_trans_from_integer_in_rational(
     (Rational([Integers(2, [2, 3], False), Natural(1, [0])]), None, ValueError),
 ])
 def test_trans_from_rational_in_integer(
-    rational: Rational, expected: str, expected_exception: Exception
+        rational: Rational, expected: str, expected_exception: Exception
 ):
     if expected_exception:
         with pytest.raises(expected_exception):
             str(rational.trans_in_integer())
     else:
         assert str(rational.trans_in_integer()) == expected
-        
+
+
 @pytest.mark.parametrize("numerator, denominator, sign, expected_answer", [
-                             ([1, 2], [6], True, True),
-                             ([1, 0, 2], [5, 1], False, True),
-                             ([1, 5, 0], [4, 9], False, False)
-                         ])
+    ([1, 2], [6], True, True),
+    ([1, 0, 2], [5, 1], False, True),
+    ([1, 5, 0], [4, 9], False, False)
+])
 def test_int_check_Rational(numerator, denominator, sign, expected_answer):
     rational = Rational([Integers(len(numerator), numerator, sign), Natural(len(denominator), denominator)])
     assert rational.int_check() == expected_answer
 
+
 @pytest.mark.parametrize("num1, num2, expected_values, expected_sign", [
-    (50, 25, [2, 5], False),    
-    (25, 50, [2, 5], True),    
-    (-50, -25, [2, 5], True),  
-    (-25, -50, [2, 5], False),  
-    (50, -25, [7, 5], False),   
-    (-25, 50, [7, 5], True),   
-    (25, 25, [0], False),     
-    (-25, -25, [0], False),    
-    (0, 50, [5, 0], True),      
-    (50, 0, [5, 0], False),     
-    (0, 0, [0], False) 
+    (50, 25, [2, 5], False),
+    (25, 50, [2, 5], True),
+    (-50, -25, [2, 5], True),
+    (-25, -50, [2, 5], False),
+    (50, -25, [7, 5], False),
+    (-25, 50, [7, 5], True),
+    (25, 25, [0], False),
+    (-25, -25, [0], False),
+    (0, 50, [5, 0], True),
+    (50, 0, [5, 0], False),
+    (0, 0, [0], False)
 ])
 def test_subtraction_integers(num1, num2, expected_values, expected_sign):
-
     num1_obj = Integers(len(str(abs(num1))), [int(i) for i in str(abs(num1))], num1 < 0)
     num2_obj = Integers(len(str(abs(num2))), [int(i) for i in str(abs(num2))], num2 < 0)
 
     result = num1_obj.subtraction_integers(num2_obj)
-    
+
     assert result.values == expected_values
     assert result.sign == expected_sign
 
@@ -373,6 +530,7 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     assert result == expected_coeff
 
 
+
 @pytest.mark.parametrize("coeff, degree, expected_coeff", [
     (['0/1', '3/7', '4/5'], '2', '4/5'),
     (['40/1', '3/5', '31/5', '0/1'], '3', '31/5'),
@@ -395,3 +553,57 @@ def test_leading_coefficient(coeff, degree, expected_coeff):
     polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
     result = polynomial.leading_coefficient()
     assert str(result) == expected_coeff
+
+@pytest.mark.parametrize("num1, num2, expected_nod", [
+    ([9, 9, 9, 9], [2, 1], [3]),
+    ([4, 5, 6], [2, 0], [4]),
+    ([4, 5, 4, 5, 6], [8, 7, 6, 5], [1]),
+    ([1, 0, 0], [2, 0], [2, 0])
+])
+def test_gcd_natural(num1, num2, expected_nod):
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+
+    result = num1.gcf_natural(num2)
+    assert result.values == expected_nod
+
+
+@pytest.mark.parametrize("num1, num2, expected_nod", [
+    ([1, 8], [4, 8], [1, 4, 4]),
+    ([4], [5, 5], [2, 2, 0])
+])
+def test_lmc_natural(num1, num2, expected_nod):
+    num1 = create_natural(num1)
+    num2 = create_natural(num2)
+
+    result = num1.lmc_natural(num2)
+    assert result.values == expected_nod
+
+
+@pytest.mark.parametrize("rational, expected", [
+    (Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "5/1",),
+    (Rational([Integers(2, [3, 0], True), Natural(1, [10])]), "- 3/1"),
+    (Rational([Integers(1, [5], False), Natural(1, [5])]), "1/1"),
+    (Rational([Integers(2, [2, 7], False), Natural(1, [4])]), "27/4"),
+    (Rational([Integers(2, [2, 0], True), Natural(1, [4])]), "- 5/1"),
+    (Rational([Integers(4, [1, 0, 0, 0], False), Natural(2, [1, 0])]), "100/1"),
+])
+
+def test_fraction_reduction(rational, expected):
+    assert str(rational.fraction_reduction()) == expected
+
+
+@pytest.mark.parametrize("rational_first, rational_second, expected", [
+    (Rational([Integers(2, [2, 5], False), Natural(1, [5])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "125/125",),
+    (Rational([Integers(2, [3, 0], True), Natural(1, [10])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "- 150/250"),
+    (Rational([Integers(1, [5], False), Natural(1, [5])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "25/125"),
+    (Rational([Integers(2, [2, 7], True), Natural(1, [4])]),
+     Rational([Integers(2, [2, 5], True), Natural(1, [5])]),  "135/100"),
+])
+
+def test_fraction_reduction(rational_first, rational_second, expected):
+    assert str(rational_first.division_of_fractions(rational_second)) == expected
+
