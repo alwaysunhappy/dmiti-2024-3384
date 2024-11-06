@@ -530,6 +530,30 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     assert result == expected_coeff
 
 
+
+@pytest.mark.parametrize("coeff, degree, expected_coeff", [
+    (['0/1', '3/7', '4/5'], '2', '4/5'),
+    (['40/1', '3/5', '31/5', '0/1'], '3', '31/5'),
+    (['4/6', '9/4', '5/3', '-37/9'], '3', '- 37/9'),
+    (['0/1', '0/1', '0/1'], '2', 'None')
+])
+def test_leading_coefficient(coeff, degree, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = polynomial.leading_coefficient()
+    assert str(result) == expected_coeff
+
 @pytest.mark.parametrize("num1, num2, expected_nod", [
     ([9, 9, 9, 9], [2, 1], [3]),
     ([4, 5, 6], [2, 0], [4]),
@@ -582,3 +606,4 @@ def test_fraction_reduction(rational, expected):
 
 def test_fraction_reduction(rational_first, rational_second, expected):
     assert str(rational_first.division_of_fractions(rational_second)) == expected
+
