@@ -118,14 +118,18 @@ class Natural:
         shift = 0  # перенос в следущий разряд
         answer = [0] * (larger_number.n + 1)  # массив длиной на один разряд больше большего числа
         for i in range(1, larger_number.n + 2):  # перебираем -1 индекс,-2 индекс и т.д.
-            if smaller_number.n >= i:  # если у меньшего числа еще есть, что складывать
-                total = larger_number.values[-i] + smaller_number.values[-i] + shift
-                answer[-i] = total % 10  # получаем цифру которая запишется в этом разряде
-                shift = total // 10  # считаем перенос на след разряд
+            if smaller_number.n >= i:  # если у меньшего числа еще есть что складывать
+                answer[-i] = larger_number.values[-i] + smaller_number.values[-i] + shift
+                shift = 0
+                if answer[-i] > 9:
+                    answer[-i] -= 10
+                    shift = 1
             elif larger_number.n >= i:  # когда у второго числа уже нечего складывать
-                total = larger_number.values[-i] + shift
-                answer[-i] = total % 10
-                shift = total // 10
+                answer[-i] = larger_number.values[-i] + shift
+                shift = 0
+                if answer[-i] > 9:
+                    answer[-i] -= 10
+                    shift = 1
             else:
                 answer[-i] = shift  # обрабатываем случай, если перенос случился на первом разрде (9 + 99 = 18)
                 # <- здесь запишем единицу
@@ -143,29 +147,19 @@ class Natural:
             larger_number, smaller_number = other.copy(), self.copy()
         else:
             larger_number, smaller_number = self.copy(), other.copy()
-        carry = 0  # Переменная для учета переноса (если предыдущий разряд занял десятку)
-        # Инициализируем массив для ответа, размер которого равен размеру большего числа
-        answer = [0] * larger_number.n
-        for i in range(1, larger_number.n + 1):  # Начинаем перебор разрядов с последнего
-            if smaller_number.n >= i:  # Если у меньшего числа есть разряд, который можно вычесть
-                total = larger_number.values[-i] - smaller_number.values[-i] - carry
-                # Если большему числу не хватает для вычитания, добавляем 10 и устанавливаем перенос
-                if total < 0:
-                    total += 10
-                    carry = 1
-                else:
-                    carry = 0
-                answer[-i] = total
-            # Если у большего числа есть разряд, но у меньшего нет
-            elif larger_number.n >= i:
-                if larger_number.values[-i] == 0 and carry:  # если мы занимали, но след. разряд 0, нужно снова занять
-                    total = larger_number.values[-i] - carry + 10
-                else:
-                    total = larger_number.values[-i] - carry
-                    carry = 0
-                answer[-i] = total
 
-        natural = create_natural(answer)
+        for i in range(1, smaller_number.n + 1):  # Начинаем перебор разрядов с последнего
+            larger_number.values[-i] = larger_number.values[-i] - smaller_number.values[-i]
+
+            j = -i
+
+            while larger_number.values[j] < 0:
+                larger_number.values[j] += 10
+                larger_number.values[j - 1] -= 1
+                j -= 1
+
+
+        natural = create_natural(larger_number.values)
         natural.del_leader_zero()
         return natural
 
@@ -234,9 +228,10 @@ class Natural:
         larger_number, smaller_number = self.copy(), other.copy()
         #  уменьшаем количество разрядов большего числа до количества разрядов второго
         larger_number.values = larger_number.values[:smaller_number.n]
+        larger_number.n = len(larger_number.values)
         # если меньшее число оказалось больше после уменьшение кол-ва разрядов большего, добавляем еще один разряд
-        if larger_number.values[0] < smaller_number.values[0]:
-            larger_number.values = self.values[:smaller_number.n+1]
+        if larger_number.cmp_of_natural_number(smaller_number) == 1:
+            larger_number.values = self.values[:smaller_number.n + 1]
         larger_number.n = len(larger_number.values)  # обновили длину большего
         # находим k
         k = create_natural([int(i) for i in str(self.n - larger_number.n)])
@@ -408,20 +403,20 @@ class Integers(Natural):
     def __str__(self):
         sign = "- " if self.sign else ""
         return sign + "".join(list(map(str, self.values)))
-    
+
     def subtraction_integers(self, other):
         """"
             SUB_ZZ_Z
             Вычитание целых чисел
         """
-        if self.values == [0] and other.values != [0]:  
+        if self.values == [0] and other.values != [0]:
             result = other.copy()
             result.sign = not other.sign  # Меняем знак результата
             return result
 
-    # Если оба числа имеют одинаковый знак
+        # Если оба числа имеют одинаковый знак
         if self.check_sign() == other.check_sign():
-        # Оба положительные
+            # Оба положительные
             if self.check_sign() == 2:
                 if self.cmp_of_natural_number(other) == 1:
                     result = other.__sub__(self)  # Вычитаем большее из меньшего
@@ -430,9 +425,9 @@ class Integers(Natural):
                     result = self.__sub__(other)  # Вычитаем меньшее из большего
                     result = Integers(result.n, result.values, False)  # Положительный результат
                 else:
-                # Если числа равны, результат нулевой с положительным знаком
+                    # Если числа равны, результат нулевой с положительным знаком
                     return Integers(1, [0], False)
-        # Оба отрицательные
+            # Оба отрицательные
             else:
                 if self.cmp_of_natural_number(other) == 1:
                     result = other.__sub__(self)
@@ -441,14 +436,14 @@ class Integers(Natural):
                     result = self.__sub__(other)
                     result = Integers(result.n, result.values, True)  # Отрицательный результат
                 else:
-                # Если числа равны, результат нулевой с положительным знаком
+                    # Если числа равны, результат нулевой с положительным знаком
                     return Integers(1, [0], False)
 
-    # Числа имеют разные знаки
+        # Числа имеют разные знаки
         else:
-            result = self.__add__(other.abs_integer())  # Складываем модули чисел
-            result = Integers(result.n, result.values, self.sign)  # Сохраняем знак `self`
-
+            first_number, second_number = self.copy(), other.copy()
+            result = (first_number.abs_integer()).__add__(second_number.abs_integer())
+            result = Integers(result.n, result.values, self.sign)
         return result
 
     def __mul__(self, other):
@@ -566,6 +561,39 @@ class Rational:
         res = Rational([new_numerator , new_denominator]) # Создаем дробь из числителя и знаменателя
 
         return res
+
+    def fraction_reduction(self):
+        """
+            RED_Q_Q
+            Сокращение дроби
+        """
+        fraction = self.copy()  # сделали копию
+        remembered_sign = self.numerator.sign  # запомнили знак
+        if remembered_sign is True:
+            fraction.numerator = fraction.numerator.abs_integer()  # взяли модуль от числителя, чтобы использовать НОД
+        gcf = fraction.denominator.gcf_natural(fraction.numerator)  # нашли НОД числителя и знаменателя
+        if remembered_sign is True:
+            fraction.numerator.sign = True  # вернули знак числителю
+        if gcf != 1:  # Если НОД больше одного, делим числитель и знаменатель на их НОД
+            fraction.numerator = fraction.numerator.div_integer(gcf.trans_in_integer())
+            fraction.denominator = create_integer(fraction.denominator.values, False).div_integer(gcf.trans_in_integer())
+        fraction.numerator.n = len(self.numerator.values)  # записали новую длину
+        fraction.denominator.n = len(self.denominator.values)
+        return fraction
+
+    def division_of_fractions(self, other):
+        """
+            DIV_QQ_Q
+            Деление дробей (делитель отличен от нуля)
+        """
+        first_fraction, second_fraction = self.copy(), other.copy()
+        remembered_sign = first_fraction.numerator.sign != second_fraction.numerator.sign
+        #  умножили числитель первой дроби на знаменатель второй дроби
+        first_fraction.numerator = first_fraction.numerator.__mul__(second_fraction.denominator.trans_in_integer())
+        result = second_fraction.numerator.__mul__(first_fraction.denominator.trans_in_integer())
+        first_fraction.denominator = Natural(result.n, result.values)
+        first_fraction.numerator.sign = remembered_sign
+        return first_fraction
 
 
 class Polynomial:

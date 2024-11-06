@@ -554,3 +554,31 @@ def test_lmc_natural(num1, num2, expected_nod):
 
     result = num1.lmc_natural(num2)
     assert result.values == expected_nod
+
+
+@pytest.mark.parametrize("rational, expected", [
+    (Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "5/1",),
+    (Rational([Integers(2, [3, 0], True), Natural(1, [10])]), "- 3/1"),
+    (Rational([Integers(1, [5], False), Natural(1, [5])]), "1/1"),
+    (Rational([Integers(2, [2, 7], False), Natural(1, [4])]), "27/4"),
+    (Rational([Integers(2, [2, 0], True), Natural(1, [4])]), "- 5/1"),
+    (Rational([Integers(4, [1, 0, 0, 0], False), Natural(2, [1, 0])]), "100/1"),
+])
+
+def test_fraction_reduction(rational, expected):
+    assert str(rational.fraction_reduction()) == expected
+
+
+@pytest.mark.parametrize("rational_first, rational_second, expected", [
+    (Rational([Integers(2, [2, 5], False), Natural(1, [5])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "125/125",),
+    (Rational([Integers(2, [3, 0], True), Natural(1, [10])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "- 150/250"),
+    (Rational([Integers(1, [5], False), Natural(1, [5])]),
+     Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "25/125"),
+    (Rational([Integers(2, [2, 7], True), Natural(1, [4])]),
+     Rational([Integers(2, [2, 5], True), Natural(1, [5])]),  "135/100"),
+])
+
+def test_fraction_reduction(rational_first, rational_second, expected):
+    assert str(rational_first.division_of_fractions(rational_second)) == expected
