@@ -400,13 +400,13 @@ class Rational:
         den = self.denominator
         num = num.abs_integer().trans_in_natural()
         comp = num.cmp_of_natural_number(den)
-
+    
         if comp == 0:
             return True
-
+    
         if comp == 1:
             return False
-
+    
         if comp == 2:
             while num.cmp_of_natural_number(den) == 2:
                 den = den.__add__(den)
@@ -414,7 +414,23 @@ class Rational:
                 return True
             else:
                 return False
-
+     
+    def Sub_Rat(self, other):
+        """
+            SUB_QQ_Q
+            Вычитание дробей.
+        """
+        dom1 = self.denominator
+        dom2 = other.denominator
+        domin = dom1.lmc_natural(dom2)
+        coef1 = domin.div_natural(dom1)
+        coef2 = domin.div_natural(dom2)
+        new_num1 = self.numerator.__mul__(Integers(len(coef1.values), coef1.values, False))
+        new_num2 = other.numerator.__mul__(Integers(len(coef2.values), coef2.values, False))
+        fin_num = new_num1.subtraction_integers(new_num2)
+        if fin_num.values==[0]:
+            return Rational([fin_num, Natural(1, [1])])
+        return Rational([fin_num, domin])
 
 class Polynomial:
     """
@@ -443,6 +459,33 @@ class Polynomial:
         Функция возвращает степень многочлена
         """
         return self.degree  # возвращает степень многочлена
+        
+    def Add_Pol(self, other):
+        """
+            Add_PP_P.
+            Сложение многочленов.
+        """
+        arr = []
+        diff = self.degree.cmp_of_natural_number(other.degree)
+        if diff == 2:
+            mini = int(''.join(map(str, other.degree.values)))
+        else:
+            mini = int(''.join(map(str, self.degree.values)))
+        for i in range(mini + 1):
+            n = self.coefficients[i].__add__(other.coefficients[i])
+            arr.append(n)
+        if diff == 2:
+            for i in range(mini + 1, int(''.join(map(str, self.degree.values))) + 1):
+                arr.append(self.coefficients[i])
+            return Polynomial([self.degree, arr])
+        if diff == 1:
+            for i in range(mini + 1, int(''.join(map(str, other.degree.values))) + 1):
+                arr.append(other.coefficients[i])
+            return Polynomial([other.degree, arr])
+        while arr[-1].numerator.values == [0]:
+            arr = arr[:-1]
+        mini = Natural(len([int(x) for x in str(len(arr) - 1)]), [int(x) for x in str(len(arr) - 1)])
+        return Polynomial([mini, arr])
 
     def multiply_by_monomial(self, k):
         """
