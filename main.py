@@ -438,7 +438,10 @@ class Integers(Natural):
             new_number_sign = False
         else:
             new_number_sign = True
-        res = super().__mul__(second_number)# умножаем используя функцию умножения натуральных
+
+        first_number = first_number.trans_in_natural()
+        second_number = second_number.trans_in_natural()
+        res = first_number.__mul__(second_number)# умножаем используя функцию умножения натуральных
         res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
         return res
 
@@ -720,7 +723,6 @@ class Launch:
             natural = input_natural()
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
-
 
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
