@@ -489,7 +489,7 @@ class Polynomial:
         # Ищем первый ненулевой коэффициент, начиная с конца списка
         for coefficient in reversed(self.coefficients):
             if coefficient.numerator.values != [0]:  # проверяем, что коэффициент не равен нулю
-                return str(coefficient)
+                return coefficient
         return None  # возвращаем None, если все коэффициенты нулевые
 
 def input_natural():
