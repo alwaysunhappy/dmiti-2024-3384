@@ -354,6 +354,28 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
 
+@pytest.mark.parametrize("first_num, second_num, expected_num", [
+    ('123/2', '877/2', '1000/2'),
+    ('283/12', '345/19', '9517/228'),
+    ('-83/12', '35/17', '- 991/204'),
+    ('-83/12', '35/3', '57/12'),
+    ('137/78', '-36/3', '- 799/78'),
+    ('337/8', '-65/3', '491/24')
+])
+def test_ADD_QQ_Q(first_num, second_num, expected_num):
+    sign1 = True if first_num[0] == '-' else False
+    sign2 = True if second_num[0] == '-' else False
+    numerator1, denominator1 = first_num.split('/')
+    numerator2, denominator2 = second_num.split('/')
+    if numerator1[0] == '-':
+        numerator1 = numerator1[1:]
+    if numerator2[0] == '-':
+        numerator2 = numerator2[1:]
+        
+    
+    rational1 = Rational([Integers(len(numerator1),[int(i) for i in numerator1], sign1), Natural(len(denominator1), [int(i) for i in denominator1])])
+    rational2 = Rational([Integers(len(numerator2),[int(i) for i in numerator2], sign2), Natural(len(denominator2), [int(i) for i in denominator2])])
+    assert str(rational1 + rational2) == expected_num
 
 @pytest.mark.parametrize("num , expected", [
     (123, 2),
