@@ -451,6 +451,56 @@ class Integers(Natural):
 
         return result
 
+    def __mul__(self, other):
+        """"
+        MUL_ZZ_Z
+        Функция для умножения целых чисел.
+        """
+        first_number = self.copy().abs_integer()  # создаем копии чисел, но без знака
+        second_number = other.copy().abs_integer()
+        first_sign = self.sign  # сохраняем знаки исходных чисел
+        second_sign = other.sign
+        if first_sign == second_sign:  # находим знак произведения 2 чисел
+            new_number_sign = False
+        else:
+            new_number_sign = True
+
+        first_number = first_number.trans_in_natural()
+        second_number = second_number.trans_in_natural()
+        res = first_number.__mul__(second_number)# умножаем используя функцию умножения натуральных
+        res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
+        return res
+
+    def div_integer(self, other):
+        """
+        DIV_ZZ_Z
+        Функция для нахождения частного от деления на ненулевое число
+        """
+        if not( super().number_is_not_zero()): # Проверяем является ли делимое нулем
+            return Integers(1 , [0] , False)
+        else:
+            dividend = self.copy().abs_integer() # Создаем копии делимого и делителя
+            divisor = other.copy().abs_integer()
+
+            if self.sign == other.sign: # Находим знак частного
+                res_sign = False
+            else:
+                res_sign = True
+
+
+            dividend = dividend.trans_in_natural()
+            divisor = divisor.trans_in_natural()
+
+            res = dividend.div_natural(divisor) # Находим частное от деления
+
+            if not( res.number_is_not_zero() ): # Проверяем, является ли частное нулем
+                return Integers(1, [0], False)
+
+            res = res.trans_in_integer(res_sign) # Добавляем знак
+
+            return res
+
+
 class Rational:
     """
     Класс, представляющий рациональное число.
@@ -501,6 +551,21 @@ class Rational:
                 return True
             else:
                 return False
+
+    def __mul__(self, other):
+        """"
+        MUL_QQ_Q
+        Функция созданная для умножения дробей.
+        """
+        f_number = self.copy() # Создаем копии чисел
+        s_number = other.copy()
+
+        new_numerator = f_number.numerator.__mul__(s_number.numerator) # Считаем числитель
+        new_denominator = f_number.denominator.__mul__(s_number.denominator) # Считаем знаменатель
+
+        res = Rational([new_numerator , new_denominator]) # Создаем дробь из числителя и знаменателя
+
+        return res
 
 
 class Polynomial:
@@ -685,8 +750,6 @@ class Launch:
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
 
-
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
-
