@@ -442,7 +442,7 @@ class Integers(Natural):
         res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
         return res
 
-    def quotient(self, other):
+    def div_integer(self, other):
         """
         DIV_ZZ_Z
         Функция для нахождения частного от деления на ненулевое число
@@ -458,15 +458,11 @@ class Integers(Natural):
             else:
                 res_sign = True
 
-            res = Natural(1 , [0])
 
             dividend = dividend.trans_in_natural()
             divisor = divisor.trans_in_natural()
 
-
-            while dividend.cmp_of_natural_number(divisor) != 1: # Вычитаем из делимого делитель , пока делимое не станет меньше , чем делитель и добавляем к результату единицу
-                dividend = dividend.__sub__(divisor)
-                res = res.increment()
+            res = dividend.div_natural(divisor) # Находим частное от деления
 
             if not( res.number_is_not_zero() ): # Проверяем, является ли частное нулем
                 return Integers(1, [0], False)
@@ -721,9 +717,12 @@ class Launch:
 
     def start_function(self):
         if self.number == 1:
-            natural = input_natural()
-            natural_second = input_natural()
-            print(natural.cmp_of_natural_number(natural_second))
+            # natural = input_natural()
+            # natural_second = input_natural()
+            # print(natural.cmp_of_natural_number(natural_second))
+            natural = input_integer()
+            natural_second = input_integer()
+            print(natural.div_integer(natural_second))
 
 
 if __name__ == "__main__":

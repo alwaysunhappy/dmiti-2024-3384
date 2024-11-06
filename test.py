@@ -88,7 +88,7 @@ def test_mul_int(number, s_number, expected):
     ("12132342343243432143243241234124231433", "-21431264532487231546712531232131112", "- 566"),
 
 ])
-def test_quotient(number, s_number, expected):
+def test_div_integer(number, s_number, expected):
     if number[0] == "-":
         f_sign = True
         integer = [int(i) for i in number[1:]]
@@ -103,7 +103,7 @@ def test_quotient(number, s_number, expected):
         s_integer = [int(i) for i in s_number]
     integer = create_integer(integer, f_sign )
     s_integer = create_integer(s_integer , s_sign)
-    result = integer.quotient(s_integer)
+    result = integer.div_integer(s_integer)
     assert result.__str__() == expected
 
 
