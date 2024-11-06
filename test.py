@@ -80,6 +80,34 @@ def test_mul_int(number, s_number, expected):
     assert result.__str__() == expected
 
 
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("0", "-123", "0"),
+    ("123", "-123234", "0"),
+    ("-1223433", "-32134123", "0"),
+    ("12323", "-435", "- 28"),
+    ("12132342343243432143243241234124231433", "-21431264532487231546712531232131112", "- 566"),
+
+])
+def test_quotient(number, s_number, expected):
+    if number[0] == "-":
+        f_sign = True
+        integer = [int(i) for i in number[1:]]
+    else:
+        f_sign = False
+        integer = [int(i) for i in number]
+    if s_number[0] == "-":
+        s_sign = True
+        s_integer = [int(i) for i in s_number[1:]]
+    else:
+        s_sign = False
+        s_integer = [int(i) for i in s_number]
+    integer = create_integer(integer, f_sign )
+    s_integer = create_integer(s_integer , s_sign)
+    result = integer.quotient(s_integer)
+    assert result.__str__() == expected
+
+
+
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),
     (10, 10, 0),

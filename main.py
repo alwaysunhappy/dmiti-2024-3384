@@ -442,6 +442,40 @@ class Integers(Natural):
         res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
         return res
 
+    def quotient(self, other):
+        """
+        DIV_ZZ_Z
+        Функция для нахождения частного от деления на ненулевое число
+        """
+        if not( super().number_is_not_zero()): # Проверяем является ли делимое нулем
+            return Integers(1 , [0] , False)
+        else:
+            dividend = self.copy().abs_integer() # Создаем копии делимого и делителя
+            divisor = other.copy().abs_integer()
+
+            if self.sign == other.sign: # Находим знак частного
+                res_sign = False
+            else:
+                res_sign = True
+
+            res = Natural(1 , [0])
+
+            dividend = dividend.trans_in_natural()
+            divisor = divisor.trans_in_natural()
+
+
+            while dividend.cmp_of_natural_number(divisor) != 1: # Вычитаем из делимого делитель , пока делимое не станет меньше , чем делитель и добавляем к результату единицу
+                dividend = dividend.__sub__(divisor)
+                res = res.increment()
+
+            if not( res.number_is_not_zero() ): # Проверяем, является ли частное нулем
+                return Integers(1, [0], False)
+
+            res = res.trans_in_integer(res_sign) # Добавляем знак
+
+            return res
+
+
 class Rational:
     """
     Класс, представляющий рациональное число.
