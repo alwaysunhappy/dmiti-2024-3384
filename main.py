@@ -693,6 +693,79 @@ class Polynomial:
             if coefficient.numerator.values != [0]:  # проверяем, что коэффициент не равен нулю
                 return coefficient
         return None  # возвращаем None, если все коэффициенты нулевые
+    
+    def multiply_by_scalar(self, scalar):
+        """
+        MUL_PQ_P
+        Умножение многочлена на рациональное число
+        """
+        polynomial = self.copy()
+        polynomial.coefficients = [number.__mul__(scalar) for number in polynomial.coefficients]
+        return polynomial
+    
+    def subtract_polynomial(self, other):
+        """
+            SUB_PP_P
+            Вычитание многочленов.
+        """
+        # Копируем многочлены, чтобы не изменить исходные
+        f_pol = self.copy()
+        s_pol = other.copy()
+        arr = []
+        # Определяем минимальную степень (по индексу), чтобы пройти по всем коэффициентам, которые присутствуют в обоих многочленах
+        min_degree = min(len(f_pol.coefficients), len(s_pol.coefficients)) - 1
+        # Вычитаем коэффициенты до минимальной степени
+        for i in range(min_degree + 1):
+            arr.append(f_pol.coefficients[i].sub_rat(s_pol.coefficients[i]))
+        # Если первый многочлен имеет большую степень, добавляем оставшиеся коэффициенты
+        if len(f_pol.coefficients) > len(s_pol.coefficients):
+            arr.extend(f_pol.coefficients[min_degree + 1:])
+        # Если второй многочлен имеет большую степень, добавляем оставшиеся коэффициенты с отрицательным знаком
+        elif len(s_pol.coefficients) > len(f_pol.coefficients):
+            for i in range(min_degree + 1, len(s_pol.coefficients)):
+                # Инвертируем знак числителя для коэффициента из второго многочлена
+                negative_numerator = [-x for x in s_pol.coefficients[i].numerator.values]
+                # Создаем новый рациональный коэффициент с инвертированным числителем
+                negative_coef = Rational([
+                    Integers(len(negative_numerator), negative_numerator, False),
+                    # Передаем новый числитель без флага is_negative
+                    s_pol.coefficients[i].denominator  # Сохраняем знаменатель
+                ])
+                arr.append(negative_coef)
+        # Удаляем ведущие нулевые коэффициенты, если они есть
+        while arr and arr[-1].numerator.values == [0]:
+            arr.pop()
+        # Если все коэффициенты стали нулями, то степень равна 0 (нулевой многочлен)
+        if arr:
+            new_degree = Natural(len(str(len(arr) - 1)), [int(x) for x in str(len(arr) - 1)])
+        else:
+            new_degree = Natural(1, [0])  # Нулевой многочлен
+        return Polynomial([new_degree, arr])
+    
+    def factor_polynomial(self):
+        """
+        FAC_P_Q
+        Вынесение из многочлена НОК знаменателей и НОД числителей
+        """
+        polynomial = self.copy()
+        # Получаем списки числителей и знаменателей для каждого коэффициента
+        numerators = [coeff.numerator for coeff in polynomial.coefficients]
+        denominators = [coeff.denominator for coeff in polynomial.coefficients]
+        # Находим НОД числителей и НОК знаменателей
+        gcf_num = numerators[0]
+        lcm_den = denominators[0]
+        # Вычисляем НОД
+        for num in numerators[1:]:
+            gcf_num = gcf_num.gcf_natural(num)
+        # Вычисляем НОК
+        for denom in denominators[1:]:
+            lcm_den = lcm_den.lmc_natural(denom)
+        gcf_num_int = Integers(gcf_num.n, gcf_num.values, sign=False)
+        # Создаем общий множитель (НОД числителей и НОК знаменателей)
+        common_factor = Rational([gcf_num_int, lcm_den])
+        for i in range(len(polynomial.coefficients)):
+            polynomial.coefficients[i] = polynomial.coefficients[i].division_of_fractions(common_factor)
+        return polynomial
 
 def input_natural():
     print("Введите натуральое число:", end=' ')
