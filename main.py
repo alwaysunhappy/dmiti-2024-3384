@@ -716,6 +716,7 @@ class Polynomial:
             # Уменьшаем k на 1.
             k = k - one
 
+        polynomial.degree = create_natural([int(i) for i in str(len(polynomial.coefficients) - 1)])
         # Возвращаем полином, умноженный на одночлен.
         return polynomial
         
@@ -833,6 +834,46 @@ class Polynomial:
         for i in range(len(polynomial.coefficients)):
             polynomial.coefficients[i] = polynomial.coefficients[i].division_of_fractions(common_factor)
         return polynomial
+
+    def __mul__(self, other):
+        #создаем полином для записи ответа
+        answer = Polynomial([create_natural([0]), [create_rational(create_integer([0], False), create_natural([1]))]])
+
+        #сделали копии полиномов
+        first_pol = self.copy()
+        second_pol = other.copy()
+
+        #  перебираем по количеству слагаемых во втором многочлене
+        for i in range(len(second_pol.coefficients)):
+            # умножаем первый полином на x^i
+            multiply_xi = first_pol.multiply_by_monomial(create_natural([int(j) for j in str(i)]))
+            #умножаем первый полином на коэффициент соответсвующий слагаемому степени x^i и прибавляем его к ответу
+            answer = answer.add_pol(multiply_xi.multiply_by_scalar(second_pol.coefficients[i]))
+
+        return answer
+
+    def div_polynom(self, other):
+        # если степень второго полинома больше, чем степень первого, частное будет равно 0
+        if self.degree.cmp_of_natural_number(other.degree) == 1:
+            return Polynomial([create_natural([0]), [create_rational(create_integer([0], False), create_natural([1]))]])
+
+        #сделали копии полиномов
+        first_pol = self.copy()
+        second_pol = other.copy()
+
+        # создаем полином для записи ответа
+        answer = Polynomial([create_natural([0]), [create_rational(create_integer([0], False), create_natural([1]))]])
+
+        # будет делить, пока степень делимого больше или равна степени делителя, либо не равна 0
+        while first_pol.degree.cmp_of_natural_number(second_pol.degree) != 1 and first_pol.degree.number_is_not_zero():
+            # получаем коэффициент домножения делителя (отношение старших коэффициентов)
+            ratio = first_pol.coefficients[-1].division_of_fractions(second_pol.coefficients[-1])
+            # прибавляем к результату одночлен, с коэффициентом ratio и степенью равной разности степеней делимого и делителя
+            answer = answer.add_pol((Polynomial([create_natural([0]), [ratio]])).multiply_by_monomial(first_pol.degree - second_pol.degree))
+            # вычитаем из делимого полином, полученный умножением одночлена на делитель
+            first_pol = first_pol.subtract_polynomial(second_pol.multiply_by_monomial(first_pol.degree - second_pol.degree).multiply_by_scalar(ratio))
+        return answer
+
 
 def input_natural():
     print("Введите натуральое число:", end=' ')
