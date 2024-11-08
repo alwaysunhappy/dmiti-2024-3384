@@ -451,6 +451,8 @@ class Integers(Natural):
         MUL_ZZ_Z
         Функция для умножения целых чисел.
         """
+        if (self.values[0] == 0 and self.n == 1) or (other.values[0] == 0 and other.n == 1):
+            return Integers(1, [0], False)
         first_number = self.copy().abs_integer()  # создаем копии чисел, но без знака
         second_number = other.copy().abs_integer()
         first_sign = self.sign  # сохраняем знаки исходных чисел
@@ -471,29 +473,43 @@ class Integers(Natural):
         DIV_ZZ_Z
         Функция для нахождения частного от деления на ненулевое число
         """
-        if not( super().number_is_not_zero()): # Проверяем является ли делимое нулем
-            return Integers(1 , [0] , False)
+        if not (super().number_is_not_zero()):  # Проверяем является ли делимое нулем
+            return Integers(1, [0], False)
         else:
-            dividend = self.copy().abs_integer() # Создаем копии делимого и делителя
+            dividend = self.copy().abs_integer()  # Создаем копии делимого и делителя
             divisor = other.copy().abs_integer()
 
-            if self.sign == other.sign: # Находим знак частного
+            if self.sign == other.sign:  # Находим знак частного
                 res_sign = False
             else:
                 res_sign = True
 
-
             dividend = dividend.trans_in_natural()
             divisor = divisor.trans_in_natural()
 
-            res = dividend.div_natural(divisor) # Находим частное от деления
+            res = dividend.div_natural(divisor)  # Находим частное от деления
 
-            if not( res.number_is_not_zero() ): # Проверяем, является ли частное нулем
+            if not (res.number_is_not_zero()):  # Проверяем, является ли частное нулем
                 return Integers(1, [0], False)
 
-            res = res.trans_in_integer(res_sign) # Добавляем знак
+            if self.sign == True and dividend.__sub__(divisor.__mul__(res)).number_is_not_zero():
+                res = res.__add__(Integers(1, [1], False))
+            res = res.trans_in_integer(res_sign)  # Добавляем знак
 
             return res
+
+    def mod_integer(self, other):
+        dividend = self.copy()
+        divisor = other.copy()
+
+        div = dividend.div_integer(divisor)
+
+        mod = dividend.subtraction_integers(divisor.__mul__(div))
+
+        if mod.sign == True:
+            mod = mod.__add__(divisor.abs_integer())
+
+        return mod
 
 
 class Rational:
