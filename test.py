@@ -803,4 +803,35 @@ def test_factor_polynomial(coeff, degree, expected_coeff):
     result = polynomial.factor_polynomial()
     results_list = [str(i) for i in result.coefficients]
     assert results_list == expected_coeff
-    
+
+
+@pytest.mark.parametrize("poly1, poly2", [
+    # Сложение двух многочленов с одинаковой степенью
+    (Polynomial([Natural(1, [2]),  # Степень многочлена 2
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2
+                  Rational([Integers(1, [3], False), Natural(1, [1])]),  # 3x
+                  Rational([Integers(1, [4], False), Natural(1, [1])])]])  # 4x^2
+     ),
+    (Polynomial([Natural(1, [1]),  # Степень многочлена 1
+                 [Rational([Integers(1, [5], False), Natural(1, [1])]),  # 5
+                  Rational([Integers(1, [6], False), Natural(1, [1])])]]),  # 6x
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]])  # 3x^2
+     ),
+    (Polynomial([Natural(1, [1]),
+                 [Rational([Integers(2, [1, 0], False), Natural(1, [1])]),  # 10
+                  Rational([Integers(2, [2, 0], False), Natural(1, [1])])]]),  # 20x
+     Polynomial([Natural(1, [2]),
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]])  # 3x^2
+     )])
+def test_mul_and_div_pol(poly1, poly2):
+    assert [str(i.fraction_reduction()) for i in (poly1 * poly2).div_polynom(poly2).coefficients if i.numerator.values != [0]] == \
+           [str(i.fraction_reduction()) for i in poly1.coefficients]
