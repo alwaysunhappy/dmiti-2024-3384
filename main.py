@@ -841,7 +841,7 @@ class Polynomial:
         """
         f_pol = self.copy()
         s_pol = other.copy()
-        if f_pol.degree.cmp_of_natural_number(s_pol.degree) == -1:
+        if f_pol.degree.cmp_of_natural_number(s_pol.degree) == 1:
             raise ValueError("Степень делимого меньше степени делителя. Невозможно выполнить деление.")
         # Выполнение деления многочленов для получения частного
         quotient = f_pol.div_polynom(s_pol)
