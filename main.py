@@ -833,6 +833,23 @@ class Polynomial:
         for i in range(len(polynomial.coefficients)):
             polynomial.coefficients[i] = polynomial.coefficients[i].division_of_fractions(common_factor)
         return polynomial
+    
+    def polynomial_remainder(self, other):
+        """
+        MOD_PP_P
+        Вычисляет остаток от деления многочлена на многочлен при делении с остатком.
+        """
+        f_pol = self.copy()
+        s_pol = other.copy()
+        if f_pol.degree.cmp_of_natural_number(s_pol.degree) == -1:
+            raise ValueError("Степень делимого меньше степени делителя. Невозможно выполнить деление.")
+        # Выполнение деления многочленов для получения частного
+        quotient = f_pol.div_polynom(s_pol)
+        # Умножаем частное на делитель, чтобы получить произведение
+        product = quotient.__mul__(s_pol)
+        # Вычитаем произведение из делимого многочлена, чтобы получить остаток
+        remainder = f_pol.subtract_polynomial(product)
+        return remainder
 
 def input_natural():
     print("Введите натуральое число:", end=' ')
