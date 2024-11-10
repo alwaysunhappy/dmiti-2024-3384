@@ -183,6 +183,9 @@ class Natural:
         MUL_NN_N
         Функция для умножения 2 натуральных чисел.
         """
+        if (self.number_is_not_zero() == False ) or (other.number_is_not_zero() == False ):
+            return Natural(1, [0])
+
         cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
 
         if cmp == 2 or cmp == 0: # Копируем больший элемент в larger_number, а меньший в lower_number
@@ -194,7 +197,7 @@ class Natural:
 
         res = Natural(1,[0])
         k = create_natural([0])
-        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
+        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число(эти действия аналогичные умножению в столбик)
             tmp = larger_number.multiplication_by_digit(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
             res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
@@ -451,6 +454,8 @@ class Integers(Natural):
         MUL_ZZ_Z
         Функция для умножения целых чисел.
         """
+        if (self.values[0] == 0 and self.n == 1) or (other.values[0] == 0 and other.n == 1):
+            return Integers(1, [0], False)
         first_number = self.copy().abs_integer()  # создаем копии чисел, но без знака
         second_number = other.copy().abs_integer()
         first_sign = self.sign  # сохраняем знаки исходных чисел
@@ -471,29 +476,40 @@ class Integers(Natural):
         DIV_ZZ_Z
         Функция для нахождения частного от деления на ненулевое число
         """
-        if not( super().number_is_not_zero()): # Проверяем является ли делимое нулем
-            return Integers(1 , [0] , False)
+        if not (super().number_is_not_zero()):  # Проверяем является ли делимое нулем
+            return Integers(1, [0], False)
         else:
-            dividend = self.copy().abs_integer() # Создаем копии делимого и делителя
+            dividend = self.copy().abs_integer()  # Создаем копии делимого и делителя
             divisor = other.copy().abs_integer()
 
-            if self.sign == other.sign: # Находим знак частного
+            if self.sign == other.sign:  # Находим знак частного
                 res_sign = False
             else:
                 res_sign = True
 
-
             dividend = dividend.trans_in_natural()
             divisor = divisor.trans_in_natural()
 
-            res = dividend.div_natural(divisor) # Находим частное от деления
+            res = dividend.div_natural(divisor)  # Находим частное от деления
 
-            if not( res.number_is_not_zero() ): # Проверяем, является ли частное нулем
+            if not (res.number_is_not_zero()):  # Проверяем, является ли частное нулем
                 return Integers(1, [0], False)
 
-            res = res.trans_in_integer(res_sign) # Добавляем знак
+            if self.sign == True and dividend.__sub__(divisor.__mul__(res)).number_is_not_zero(): #Проверяем может ли быть остаток отрицательным.
+                res = res.__add__(Integers(1, [1], False))
+            res = res.trans_in_integer(res_sign)  # Добавляем знак
 
             return res
+
+    def mod_integer(self, other):
+        dividend = self.copy()  #делаем копии делимого и делителя
+        divisor = other.copy()
+
+        quotlent = dividend.div_integer(divisor) #находим частное
+
+        mod = dividend.subtraction_integers(divisor.__mul__(quotlent)) # находим остаток от деления
+
+        return mod
 
 
 class Rational:
