@@ -183,7 +183,7 @@ class Natural:
         MUL_NN_N
         Функция для умножения 2 натуральных чисел.
         """
-        if (self.values[0] == 0 and self.n == 1) or (other.values[0] == 0 and other.n == 1):
+        if (self.number_is_not_zero() == False ) or (other.number_is_not_zero() == False ):
             return Natural(1, [0])
 
         cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
@@ -197,7 +197,7 @@ class Natural:
 
         res = Natural(1,[0])
         k = create_natural([0])
-        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число
+        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число(эти действия аналогичные умножению в столбик)
             tmp = larger_number.multiplication_by_digit(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
             res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
@@ -495,22 +495,19 @@ class Integers(Natural):
             if not (res.number_is_not_zero()):  # Проверяем, является ли частное нулем
                 return Integers(1, [0], False)
 
-            if self.sign == True and dividend.__sub__(divisor.__mul__(res)).number_is_not_zero():
+            if self.sign == True and dividend.__sub__(divisor.__mul__(res)).number_is_not_zero(): #Проверяем может ли быть остаток отрицательным.
                 res = res.__add__(Integers(1, [1], False))
             res = res.trans_in_integer(res_sign)  # Добавляем знак
 
             return res
 
     def mod_integer(self, other):
-        dividend = self.copy()
+        dividend = self.copy()  #делаем копии делимого и делителя
         divisor = other.copy()
 
-        div = dividend.div_integer(divisor)
+        quotlent = dividend.div_integer(divisor) #находим частное
 
-        mod = dividend.subtraction_integers(divisor.__mul__(div))
-
-        if mod.sign == True:
-            mod = mod.__add__(divisor.abs_integer())
+        mod = dividend.subtraction_integers(divisor.__mul__(quotlent)) # находим остаток от деления
 
         return mod
 
@@ -985,9 +982,10 @@ class Launch:
 
     def start_function(self):
         if self.number == 1:
-            natural = input_natural()
-            natural_second = input_natural()
-            print(natural.cmp_of_natural_number(natural_second))
+            natural = input_integer()
+            natural_second = input_integer()
+            print(natural.div_integer(natural_second))
+            print(natural.mod_integer(natural_second))
 
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
