@@ -982,10 +982,9 @@ class Launch:
 
     def start_function(self):
         if self.number == 1:
-            natural = input_integer()
-            natural_second = input_integer()
-            print(natural.div_integer(natural_second))
-            print(natural.mod_integer(natural_second))
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.cmp_of_natural_number(natural_second))
 
 if __name__ == "__main__":
     a = int(input("Введите номер функции: "))
