@@ -74,8 +74,8 @@ def test_mul_int(number, s_number, expected):
     else:
         s_sign = False
         s_integer = [int(i) for i in s_number]
-    integer = create_integer(integer, f_sign )
-    s_integer = create_integer(s_integer , s_sign)
+    integer = create_integer(integer, f_sign)
+    s_integer = create_integer(s_integer, s_sign)
     result = integer.__mul__(s_integer)
     assert result.__str__() == expected
 
@@ -101,9 +101,36 @@ def test_div_integer(number, s_number, expected):
     else:
         s_sign = False
         s_integer = [int(i) for i in s_number]
-    integer = create_integer(integer, f_sign )
-    s_integer = create_integer(s_integer , s_sign)
+    integer = create_integer(integer, f_sign)
+    s_integer = create_integer(s_integer, s_sign)
     result = integer.div_integer(s_integer)
+    assert result.__str__() == expected
+
+
+@pytest.mark.parametrize("number, s_number, expected", [
+    ("0", "-123123213", "0"),
+    ("865", "-245", "130"),
+    ("-3458374", "5348", "1782"),
+    ("-2413", "-243", "17"),
+    ("123123123", "1254325435", "123123123"),
+
+])
+def test_mod_integer(number, s_number, expected):
+    if number[0] == "-":
+        f_sign = True
+        integer = [int(i) for i in number[1:]]
+    else:
+        f_sign = False
+        integer = [int(i) for i in number]
+    if s_number[0] == "-":
+        s_sign = True
+        s_integer = [int(i) for i in s_number[1:]]
+    else:
+        s_sign = False
+        s_integer = [int(i) for i in s_number]
+    integer = create_integer(integer, f_sign)
+    s_integer = create_integer(s_integer, s_sign)
+    result = integer.mod_integer(s_integer)
     assert result.__str__() == expected
 
 
@@ -136,6 +163,7 @@ def test_mul_rational(number, s_number, expected):
     s_number = create_rational(create_integer(s_numerator, s_sign), create_natural(s_denominator))
     res = f_number.__mul__(s_number)
     assert res.__str__() == expected
+
 
 @pytest.mark.parametrize("num1, num2, expected", [
     (5, 3, 2),
@@ -354,6 +382,7 @@ def test_Rational(numerator, denominator, sign, expected_numerator_n, expected_n
     assert rational.numerator.values == expected_numerator_values and rational.numerator.n == expected_numerator_n
     assert rational.denominator.values == expected_denominator_values and rational.denominator.n == expected_denominator_n
 
+
 @pytest.mark.parametrize("first_num, second_num, expected_num", [
     ('123/2', '877/2', '1000/2'),
     ('283/12', '345/19', '9517/228'),
@@ -371,11 +400,13 @@ def test_ADD_QQ_Q(first_num, second_num, expected_num):
         numerator1 = numerator1[1:]
     if numerator2[0] == '-':
         numerator2 = numerator2[1:]
-        
-    
-    rational1 = Rational([Integers(len(numerator1),[int(i) for i in numerator1], sign1), Natural(len(denominator1), [int(i) for i in denominator1])])
-    rational2 = Rational([Integers(len(numerator2),[int(i) for i in numerator2], sign2), Natural(len(denominator2), [int(i) for i in denominator2])])
+
+    rational1 = Rational([Integers(len(numerator1), [int(i) for i in numerator1], sign1),
+                          Natural(len(denominator1), [int(i) for i in denominator1])])
+    rational2 = Rational([Integers(len(numerator2), [int(i) for i in numerator2], sign2),
+                          Natural(len(denominator2), [int(i) for i in denominator2])])
     assert str(rational1 + rational2) == expected_num
+
 
 @pytest.mark.parametrize("num , expected", [
     (123, 2),
@@ -552,7 +583,6 @@ def test_div_pol(coeff, degree, k, expected_coeff):
     assert result == expected_coeff
 
 
-
 @pytest.mark.parametrize("coeff, degree, expected_coeff", [
     (['0/1', '3/7', '4/5'], '2', '4/5'),
     (['40/1', '3/5', '31/5', '0/1'], '3', '31/5'),
@@ -575,6 +605,7 @@ def test_leading_coefficient(coeff, degree, expected_coeff):
     polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
     result = polynomial.leading_coefficient()
     assert str(result) == expected_coeff
+
 
 @pytest.mark.parametrize("num1, num2, expected_nod", [
     ([9, 9, 9, 9], [2, 1], [3]),
@@ -601,7 +632,7 @@ def test_lmc_natural(num1, num2, expected_nod):
     result = num1.lmc_natural(num2)
     assert result.values == expected_nod
 
-    
+
 @pytest.mark.parametrize("fraction1, fraction2, expected_numerator, expected_denominator", [
     # Обычное вычитание
     (Rational([Integers(1, [3], False), Natural(1, [4])]),  # 3/4
@@ -632,19 +663,20 @@ def test_sub_rat(fraction1: Rational, fraction2: Rational, expected_numerator: I
     assert result.numerator.values == expected_numerator.values
     assert result.denominator.values == expected_denominator.values
 
+
 @pytest.mark.parametrize("poly1, poly2, expected_coefficients, expected_degree", [
     # Сложение двух многочленов с одинаковой степенью
     (Polynomial([Natural(1, [2]),  # Степень многочлена 2
-                 [Rational([Integers(1, [1], False), Natural(1, [1])]),   # 1
-                  Rational([Integers(1, [2], False), Natural(1, [1])]),   # 2x
-                  Rational([Integers(1, [3], False), Natural(1, [1])])]]), # 3x^2
+                 [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
+                  Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
+                  Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
      Polynomial([Natural(1, [2]),
-                 [Rational([Integers(1, [2], False), Natural(1, [1])]),   # 2
-                  Rational([Integers(1, [3], False), Natural(1, [1])]),   # 3x
-                  Rational([Integers(1, [4], False), Natural(1, [1])])]]), # 4x^2
-     [Rational([Integers(1, [3], False), Natural(1, [1])]),               # 1 + 2 = 3
-      Rational([Integers(1, [5], False), Natural(1, [1])]),               # 2 + 3 = 5
-      Rational([Integers(1, [7], False), Natural(1, [1])])],              # 3 + 4 = 7
+                 [Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2
+                  Rational([Integers(1, [3], False), Natural(1, [1])]),  # 3x
+                  Rational([Integers(1, [4], False), Natural(1, [1])])]]),  # 4x^2
+     [Rational([Integers(1, [3], False), Natural(1, [1])]),  # 1 + 2 = 3
+      Rational([Integers(1, [5], False), Natural(1, [1])]),  # 2 + 3 = 5
+      Rational([Integers(1, [7], False), Natural(1, [1])])],  # 3 + 4 = 7
      Natural(1, [2])),  # Ожидаемая степень многочлена
 
     # Сложение многочленов разной степени
@@ -655,9 +687,9 @@ def test_sub_rat(fraction1: Rational, fraction2: Rational, expected_numerator: I
                  [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
                   Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
                   Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
-     [Rational([Integers(1, [6], False), Natural(1, [1])]),              # 5 + 1 = 6
-      Rational([Integers(1, [8], False), Natural(1, [1])]),              # 6 + 2 = 8
-      Rational([Integers(1, [3], False), Natural(1, [1])])],             # 0 + 3 = 3
+     [Rational([Integers(1, [6], False), Natural(1, [1])]),  # 5 + 1 = 6
+      Rational([Integers(1, [8], False), Natural(1, [1])]),  # 6 + 2 = 8
+      Rational([Integers(1, [3], False), Natural(1, [1])])],  # 0 + 3 = 3
      Natural(1, [2])),  # Ожидаемая степень многочлена
 
     # Сложение многочлена с нулевым многочленом
@@ -668,16 +700,17 @@ def test_sub_rat(fraction1: Rational, fraction2: Rational, expected_numerator: I
                  [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 1
                   Rational([Integers(1, [2], False), Natural(1, [1])]),  # 2x
                   Rational([Integers(1, [3], False), Natural(1, [1])])]]),  # 3x^2
-     [Rational([Integers(1, [1], False), Natural(1, [1])]),              # 0 + 1 = 1
-      Rational([Integers(1, [2], False), Natural(1, [1])]),              # 0 + 2 = 2
-      Rational([Integers(1, [3], False), Natural(1, [1])])],             # 0 + 3 = 3
+     [Rational([Integers(1, [1], False), Natural(1, [1])]),  # 0 + 1 = 1
+      Rational([Integers(1, [2], False), Natural(1, [1])]),  # 0 + 2 = 2
+      Rational([Integers(1, [3], False), Natural(1, [1])])],  # 0 + 3 = 3
      Natural(1, [2])),  # Ожидаемая степень многочлена
 ])
 def test_add_polynomial(poly1, poly2, expected_coefficients, expected_degree):
     result = poly1.add_pol(poly2)
     assert result.degree.values == expected_degree.values, "Степень результирующего многочлена неверна"
     for i, coeff in enumerate(result.coefficients):
-        assert coeff.numerator.values == expected_coefficients[i].numerator.values, f"Числитель коэффициента при степени {i} неверен"
+        assert coeff.numerator.values == expected_coefficients[
+            i].numerator.values, f"Числитель коэффициента при степени {i} неверен"
         assert coeff.denominator.values == expected_coefficients[i].denominator.values
 
 
@@ -689,7 +722,6 @@ def test_add_polynomial(poly1, poly2, expected_coefficients, expected_degree):
     (Rational([Integers(2, [2, 0], True), Natural(1, [4])]), "- 5/1"),
     (Rational([Integers(4, [1, 0, 0, 0], False), Natural(2, [1, 0])]), "100/1"),
 ])
-
 def test_fraction_reduction(rational, expected):
     assert str(rational.fraction_reduction()) == expected
 
@@ -702,9 +734,8 @@ def test_fraction_reduction(rational, expected):
     (Rational([Integers(1, [5], False), Natural(1, [5])]),
      Rational([Integers(2, [2, 5], False), Natural(1, [5])]), "25/125"),
     (Rational([Integers(2, [2, 7], True), Natural(1, [4])]),
-     Rational([Integers(2, [2, 5], True), Natural(1, [5])]),  "135/100"),
+     Rational([Integers(2, [2, 5], True), Natural(1, [5])]), "135/100"),
 ])
-
 def test_fraction_reduction(rational_first, rational_second, expected):
     assert str(rational_first.division_of_fractions(rational_second)) == expected
 
@@ -736,53 +767,55 @@ def test_multiply_by_scalar(coeff, degree, scalar, expected_coeff):
     result = polynomial.multiply_by_scalar(s_number)
     result_list = [str(i) for i in result.coefficients]
     assert result_list == expected_coeff
-    
+
+
 @pytest.mark.parametrize(
     "f_pol, s_pol, expected",
     [(Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [2], False), Natural(1, [1])])]]),
-            ['0/1', '-1/1', '3/1']),
-    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [1]), [Rational([Integers(1, [4], False), Natural(1, [1])]),
-                    Rational([Integers(1, [0], False), Natural(1, [1])]),
-                    Rational([Integers(1, [5], False), Natural(1, [1])])]]),
-            ['-3/1', '1/1', '-2/1']),
-        (Polynomial([Natural(1, [2]), [
-                    Rational([Integers(1, [1], False), Natural(1, [2])]),
-                    Rational([Integers(1, [3], False), Natural(1, [4])]),
-                    Rational([Integers(1, [5], False), Natural(1, [6])])
-                ]]),
-            Polynomial([Natural(1, [3]), [
-                    Rational([Integers(1, [7], False), Natural(1, [10])]),
-                    Rational([Integers(1, [2], False), Natural(1, [5])]),
-                    Rational([Integers(1, [4], False), Natural(1, [3])]),
-                    Rational([Integers(1, [3], False), Natural(1, [4])])
-                ]]),
-            ['-2/10', '7/20', '-3/6', '-3/4']),
-        (Polynomial([Natural(1, [2]),  
-                [Rational([Integers(1, [2], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])]),
-                    Rational([Integers(1, [4], False), Natural(1, [1])])]
-            ]),
-            Polynomial([Natural(1, [4]),
-                [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [0], False), Natural(1, [1])]),
-                    Rational([Integers(1, [5], False), Natural(1, [1])]),
-                    Rational([Integers(1, [6], False), Natural(1, [1])]),
-                    Rational([Integers(1, [7], False), Natural(1, [1])])]
-            ]),
-            ['1/1', '3/1', '-1/1', '-6/1', '-7/1'])
-    ])
+                                    Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
+      Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [2], False), Natural(1, [1])])]]),
+      ['0/1', '-1/1', '3/1']),
+     (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
+      Polynomial([Natural(1, [1]), [Rational([Integers(1, [4], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [0], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [5], False), Natural(1, [1])])]]),
+      ['-3/1', '1/1', '-2/1']),
+     (Polynomial([Natural(1, [2]), [
+         Rational([Integers(1, [1], False), Natural(1, [2])]),
+         Rational([Integers(1, [3], False), Natural(1, [4])]),
+         Rational([Integers(1, [5], False), Natural(1, [6])])
+     ]]),
+      Polynomial([Natural(1, [3]), [
+          Rational([Integers(1, [7], False), Natural(1, [10])]),
+          Rational([Integers(1, [2], False), Natural(1, [5])]),
+          Rational([Integers(1, [4], False), Natural(1, [3])]),
+          Rational([Integers(1, [3], False), Natural(1, [4])])
+      ]]),
+      ['-2/10', '7/20', '-3/6', '-3/4']),
+     (Polynomial([Natural(1, [2]),
+                  [Rational([Integers(1, [2], False), Natural(1, [1])]),
+                   Rational([Integers(1, [3], False), Natural(1, [1])]),
+                   Rational([Integers(1, [4], False), Natural(1, [1])])]
+                  ]),
+      Polynomial([Natural(1, [4]),
+                  [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                   Rational([Integers(1, [0], False), Natural(1, [1])]),
+                   Rational([Integers(1, [5], False), Natural(1, [1])]),
+                   Rational([Integers(1, [6], False), Natural(1, [1])]),
+                   Rational([Integers(1, [7], False), Natural(1, [1])])]
+                  ]),
+      ['1/1', '3/1', '-1/1', '-6/1', '-7/1'])
+     ])
 def test_subtract_polynomial(f_pol, s_pol, expected):
     result = f_pol.subtract_polynomial(s_pol)
     result_list = [str(i).replace('- ', '-') for i in result.coefficients]
     assert result_list == expected
-    
+
+
 @pytest.mark.parametrize("coeff, degree, expected_coeff", [
     (['1/3', '2/5', '3/4'], '2', ['60/3', '120/5', '180/4']),
     (['40/1', '3/4', '31/5', '3/2'], '3', ['800/1', '60/4', '620/5', '60/2']),
@@ -867,5 +900,6 @@ def test_polynomial_remainder(f_pol, s_pol, expected):
                   Rational([Integers(1, [3], False), Natural(1, [1])])]])  # 3x^2
      )])
 def test_mul_and_div_pol(poly1, poly2):
-    assert [str(i.fraction_reduction()) for i in (poly1 * poly2).div_polynom(poly2).coefficients if i.numerator.values != [0]] == \
+    assert [str(i.fraction_reduction()) for i in (poly1 * poly2).div_polynom(poly2).coefficients if
+            i.numerator.values != [0]] == \
            [str(i.fraction_reduction()) for i in poly1.coefficients]
