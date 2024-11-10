@@ -773,41 +773,37 @@ class Polynomial:
     
     def subtract_polynomial(self, other):
         """
-            SUB_PP_P
-            Вычитание многочленов.
+        SUB_PP_P
+        Вычитание многочленов.
         """
-        # Копируем многочлены, чтобы не изменить исходные
         f_pol = self.copy()
         s_pol = other.copy()
-        arr = []
+        arr = []  # Список для хранения новых коэффициентов
         # Определяем минимальную степень (по индексу), чтобы пройти по всем коэффициентам, которые присутствуют в обоих многочленах
         min_degree = min(len(f_pol.coefficients), len(s_pol.coefficients)) - 1
-        # Вычитаем коэффициенты до минимальной степени
+        # Вычитаем коэффициенты до минимальной степени (наименьшей длины списка коэффициентов)
         for i in range(min_degree + 1):
             arr.append(f_pol.coefficients[i].sub_rat(s_pol.coefficients[i]))
         # Если первый многочлен имеет большую степень, добавляем оставшиеся коэффициенты
         if len(f_pol.coefficients) > len(s_pol.coefficients):
             arr.extend(f_pol.coefficients[min_degree + 1:])
-        # Если второй многочлен имеет большую степень, добавляем оставшиеся коэффициенты с отрицательным знаком
+        # Если второй многочлен имеет большую степень, добавляем оставшиеся коэффициенты со знаком минус
         elif len(s_pol.coefficients) > len(f_pol.coefficients):
             for i in range(min_degree + 1, len(s_pol.coefficients)):
-                # Инвертируем знак числителя для коэффициента из второго многочлена
-                negative_numerator = [-x for x in s_pol.coefficients[i].numerator.values]
-                # Создаем новый рациональный коэффициент с инвертированным числителем
-                negative_coef = Rational([
-                    Integers(len(negative_numerator), negative_numerator, False),
-                    # Передаем новый числитель без флага is_negative
-                    s_pol.coefficients[i].denominator  # Сохраняем знаменатель
-                ])
+                num = s_pol.coefficients[i].numerator.values
+                denum = s_pol.coefficients[i].denominator
+                # Создаем коэффициент с отрицательным знаком
+                negative_coef = Rational([Integers(len(num), num, True), denum])
                 arr.append(negative_coef)
         # Удаляем ведущие нулевые коэффициенты, если они есть
         while arr and arr[-1].numerator.values == [0]:
             arr.pop()
-        # Если все коэффициенты стали нулями, то степень равна 0 (нулевой многочлен)
+        # Если после всех операций все коэффициенты оказались нулевыми, то это нулевой многочлен, степень которого равна 0
         if arr:
+            # Определяем новую степень многочлена по количеству ненулевых коэффициентов
             new_degree = Natural(len(str(len(arr) - 1)), [int(x) for x in str(len(arr) - 1)])
         else:
-            new_degree = Natural(1, [0])  # Нулевой многочлен
+            new_degree = Natural(1, [0])  # Нулевой многочлен степени 0
         return Polynomial([new_degree, arr])
     
     def factor_polynomial(self):
