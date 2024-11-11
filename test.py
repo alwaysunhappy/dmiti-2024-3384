@@ -894,3 +894,60 @@ def test_mul_and_div_pol(poly1, poly2):
     assert [str(i.fraction_reduction()) for i in (poly1 * poly2).div_polynom(poly2).coefficients if
             i.numerator.values != [0]] == \
            [str(i.fraction_reduction()) for i in poly1.coefficients]
+           
+# Параметризованные тесты для gcf_pol
+@pytest.mark.parametrize("coeff_1, degree_1, coeff_2, degree_2, expected_gcd", [
+    # Пример 1: НОД для двух многочленов, имеющих общий множитель x + 1
+    (['1/1', '2/1', '1/1'], '2', ['1/1', '1/1'], '1', ['1/1', '1/1']),
+    
+    # Пример 2: НОД двух многочленов, равный 1 (взаимно простые)
+    (['3/1', '0/1', '1/1'], '2', ['2/1', '1/1'], '1', ['1/1']),
+    
+    # Пример 3: НОД одинаковых многочленов
+    (['2/1', '4/1'], '1', ['2/1', '4/1'], '1', ['2/1', '4/1'])
+])
+def test_gcf_pol(coeff_1, degree_1, coeff_2, degree_2, expected_gcd):
+    def create_polynomial(coeff, degree):
+        rational_list = []
+        for item in coeff:
+            numerator, denominator = item.split('/')
+            sign = numerator[0] == '-'
+            if sign:
+                numerator = numerator[1:]
+            numerator = Integers(len(numerator), [int(d) for d in numerator], sign)
+            denominator = Natural(len(denominator), [int(d) for d in denominator])
+            rational_list.append(Rational([numerator, denominator]))
+        return Polynomial([Natural(len(degree), [int(d) for d in degree]), rational_list])
+
+    # Создаём многочлены
+    poly_1 = create_polynomial(coeff_1, degree_1)
+    poly_2 = create_polynomial(coeff_2, degree_2)
+    expected_gcd_poly = create_polynomial(expected_gcd, str(len(expected_gcd) - 1))
+
+    # Вызываем метод НОД для многочленов и проверяем результат
+    result = poly_1.gcf_pol(poly_2)
+    for i, coeff in enumerate(result.coefficients):
+        assert coeff.numerator.values == [int(expected_gcd[i][0])]
+        assert coeff.denominator.values == [int(expected_gcd[i][2])]
+
+
+@pytest.mark.parametrize("coeff, degree, expected_coeff", [
+    (['1/1', '-2/1', '1/1'], '2', ['- 2/4', '1/2']),
+    (['1/1', '1/1', '1/1'], '2', ['1/1', '1/1', '1/1'])
+])
+def test_eliminating_duplicate_roots(coeff, degree, expected_coeff):
+    rational_list = []
+    for item in coeff:
+        numerator = item.split('/')[0]
+        denominator = item.split('/')[1]
+        if numerator[0] == '-':
+            sign = True
+            numerator = numerator[1:]
+        else:
+            sign = False
+        numerator = Integers(len(numerator), [int(i) for i in numerator], sign)
+        rational_list += [Rational([numerator, Natural(len(denominator), [int(i) for i in denominator])])]
+
+    polynomial = Polynomial([Natural(len(degree), [int(i) for i in degree]), rational_list])
+    result = list(map(str, polynomial.eliminating_duplicate_roots().coefficients))
+    assert result == expected_coeff
