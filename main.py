@@ -805,12 +805,10 @@ class Polynomial:
             arr.extend(f_pol.coefficients[min_degree + 1:])
         # Если второй многочлен имеет большую степень, добавляем оставшиеся коэффициенты со знаком минус
         elif len(s_pol.coefficients) > len(f_pol.coefficients):
-            for i in range(min_degree + 1, len(s_pol.coefficients)):
-                num = s_pol.coefficients[i].numerator.values
-                denum = s_pol.coefficients[i].denominator
-                # Создаем коэффициент с отрицательным знаком
-                negative_coef = Rational([Integers(len(num), num, True), denum])
-                arr.append(negative_coef)
+            for coef in s_pol.coefficients[len(f_pol.coefficients):]:
+                inverted_numerator = coef.numerator.invert_sign()
+                new_coef = Rational([inverted_numerator, coef.denominator])
+                arr.append(new_coef)
         # Удаляем ведущие нулевые коэффициенты, если они есть
         while arr and arr[-1].numerator.values == [0]:
             arr.pop()

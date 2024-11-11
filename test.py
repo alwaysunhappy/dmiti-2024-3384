@@ -771,8 +771,7 @@ def test_multiply_by_scalar(coeff, degree, scalar, expected_coeff):
 
 @pytest.mark.parametrize(
     "f_pol, s_pol, expected",
-    [
-        (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+    [(Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
                     Rational([Integers(1, [1], False), Natural(1, [1])]),
                     Rational([Integers(1, [3], False), Natural(1, [1])])]]),
             Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
@@ -785,28 +784,23 @@ def test_multiply_by_scalar(coeff, degree, scalar, expected_coeff):
                     Rational([Integers(1, [0], False), Natural(1, [1])]),
                     Rational([Integers(1, [5], False), Natural(1, [1])])]]),
             ['- 3/1', '1/1', '- 2/1']),
-        (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
+    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
                     Rational([Integers(1, [3], False), Natural(1, [4])]),
-                    Rational([Integers(1, [5], False), Natural(1, [6])])
-                ]]),
+                    Rational([Integers(1, [5], False), Natural(1, [6])])]]),
             Polynomial([Natural(1, [3]), [Rational([Integers(1, [7], False), Natural(1, [10])]),
                     Rational([Integers(1, [2], False), Natural(1, [5])]),
                     Rational([Integers(1, [4], False), Natural(1, [3])]),
-                    Rational([Integers(1, [3], False), Natural(1, [4])])
-                ]]),
+                    Rational([Integers(1, [3], False), Natural(1, [4])])]]),
             ['- 2/10', '7/20', '- 3/6', '- 3/4']),
-        (Polynomial([Natural(1, [2]), [Rational([Integers(1, [2], False), Natural(1, [1])]),
+    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [2], False), Natural(1, [1])]),
                     Rational([Integers(1, [3], False), Natural(1, [1])]),
-                    Rational([Integers(1, [4], False), Natural(1, [1])])]
-            ]),
+                    Rational([Integers(1, [4], False), Natural(1, [1])])]]),
             Polynomial([Natural(1, [4]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
                     Rational([Integers(1, [0], False), Natural(1, [1])]),
                     Rational([Integers(1, [5], False), Natural(1, [1])]),
-                    Rational([Integers(1, [6], False), Natural(1, [1])]),
-                    Rational([Integers(1, [7], False), Natural(1, [1])])]
-            ]),
-            ['1/1', '3/1', '- 1/1', '- 6/1', '- 7/1'])
-    ])
+                    Rational([Integers(1, [6], True), Natural(1, [1])]),
+                    Rational([Integers(1, [7], True), Natural(1, [1])])]]),
+            ['1/1', '3/1', '- 1/1', '6/1', '7/1'])])
 def test_subtract_polynomial(f_pol, s_pol, expected):
     result = f_pol.subtract_polynomial(s_pol)
     result_list = [str(i) for i in result.coefficients]
