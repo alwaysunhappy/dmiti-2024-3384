@@ -546,18 +546,22 @@ class Rational:
         """
         num = self.numerator
         den = self.denominator
+        den1 = den
+        #сравнение числителя со знаменателем
         num = num.abs_integer().trans_in_natural()
         comp = num.cmp_of_natural_number(den)
-    
+    	#если числитель == знаменателю, то True
         if comp == 0:
             return True
-    
+    	#если знаменатель больше сразу False
         if comp == 1:
             return False
     
         if comp == 2:
+            #пока числитель больше знаменателя, умножаем знаменатель, пока тот не превысит или станет равным числителю
             while num.cmp_of_natural_number(den) == 2:
-                den = den.__add__(den)
+                den = den.__add__(den1)
+            #если стал равен то True иначе False
             if num.cmp_of_natural_number(den) == 0:
                 return True
             else:
@@ -570,12 +574,17 @@ class Rational:
         """
         dom1 = self.denominator
         dom2 = other.denominator
+        #нахождение общего делителя, используя НОК
         domin = dom1.lmc_natural(dom2)
+        #нахождение коэффициетов умножения
         coef1 = domin.div_natural(dom1)
         coef2 = domin.div_natural(dom2)
+        #умножение этих коэффициетнов на числители
         new_num1 = self.numerator.__mul__(Integers(len(coef1.values), coef1.values, False))
         new_num2 = other.numerator.__mul__(Integers(len(coef2.values), coef2.values, False))
+        #вычитание приведенных числителей
         fin_num = new_num1.subtraction_integers(new_num2)
+        #если в результате получился 0 в числителе, то знаменатель = 1
         if fin_num.values==[0]:
             return Rational([fin_num, Natural(1, [1])])
         return Rational([fin_num, domin])
@@ -687,21 +696,26 @@ class Polynomial:
         """
         arr = []
         diff = self.degree.cmp_of_natural_number(other.degree)
+        #берем наименьшую степень многочленов
         if diff == 2:
             mini = int(''.join(map(str, other.degree.values)))
         else:
             mini = int(''.join(map(str, self.degree.values)))
+        #складываем первые члены многочлены, которые есть у обоих многочленов
         for i in range(mini + 1):
             n = self.coefficients[i].__add__(other.coefficients[i])
             arr.append(n)
         if diff == 2:
+            #если первый полином больше, то заполняем остатки из него, просто добавляя в массив
             for i in range(mini + 1, int(''.join(map(str, self.degree.values))) + 1):
                 arr.append(self.coefficients[i])
             return Polynomial([self.degree, arr])
         if diff == 1:
+            #если больше второй то наоборот 
             for i in range(mini + 1, int(''.join(map(str, other.degree.values))) + 1):
                 arr.append(other.coefficients[i])
             return Polynomial([other.degree, arr])
+        #удаление нулей в конце, так как они ни на что не влияют и портят конечную степень многочлена
         while arr[-1].numerator.values == [0]:
             arr = arr[:-1]
         mini = Natural(len([int(x) for x in str(len(arr) - 1)]), [int(x) for x in str(len(arr) - 1)])
@@ -756,16 +770,67 @@ class Polynomial:
             DER_P_P
             Возвращает производную многочлена.
         '''
-        coeffs = self.coefficients[1:]
+        #глубокое копирование с отбрасыванием последнего коэффициента
+        pol = copy.deepcopy(self)
+        coeffs = pol.coefficients[1:]
         new_coeffs = []
+        #коэффициент для умножения
         deg = 1
         for coef in coeffs:
+            #алгоритм создания нового коэффицинта, в зависимости от его расположения в массиве коэффициентов
+            s = coef.numerator.sign
             value = coef.numerator.abs_integer().trans_in_natural().multiplication_by_digit(deg).values
-            Int_coef = Integers(len(value), value, coef.numerator.sign)
+            Int_coef = Integers(len(value), value, s)
             coef = Rational([Int_coef, coef.denominator])
             new_coeffs.append(coef)
             deg += 1
-        return Polynomial([self.degree.multiplication_by_digit(1), new_coeffs])
+        
+        return Polynomial([pol.degree.__sub__(Natural(1, [1])), new_coeffs])
+    
+    def gcf_pol(self, other):
+        """
+            GCF_PP_P
+            НОД многочленов.
+        """
+        #копирование наибольего в pol_1, а меньшего в pol_2
+        if self.degree.cmp_of_natural_number(other.degree) == 1:
+            pol_1 = other.copy()
+            pol_2 = self.copy()
+        else:
+            pol_1 = self.copy()
+            pol_2 = other.copy()
+        #если равны, то НОД любой из них
+        if pol_1.coefficients == pol_2.coefficients:
+            return pol_1
+        #находим остаток от деления pol_1 на pol_2 и сохраняем делитель в pol_3
+        ost = pol_1.polynomial_remainder(pol_2)
+        pol_3 = pol_2
+        while ost.coefficients != []:
+            #если НОД равен числу, а не полиному, то выводим единицу
+            if len(ost.coefficients) == 1:
+                return Polynomial([Natural(1, [0]), [Rational([Integers(1, [1], False), Natural(1, [1])])]])
+            #сохраняем последний остаток, так как он может быть последним != 0, в ином случае он станет делиммым
+            ost1 = ost
+            ost = pol_3.polynomial_remainder(ost)
+            pol_3 = ost1
+            #цикл завершается, когда последний остаток == 0
+        return pol_3
+
+    def eliminating_duplicate_roots(self):
+    """
+    	NMR_P_P
+    	Преобразование многочлена — кратные корни в простые.
+    """
+        pol = self.copy()
+        # Нахождение производной многочлена
+        f_der = pol.pol_derivative()
+        print(self, f_der)
+        # Нахождение НОД многочлена
+        d = pol.gcf_pol(f_der)
+        if d.degree.n == 1 and d.degree.values[0] == 0:
+            return pol
+        # Выводим результат деления многочлена на d
+        return pol.div_polynom(d)
     
     def leading_coefficient(self):
         """
