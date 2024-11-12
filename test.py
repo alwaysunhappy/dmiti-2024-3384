@@ -772,35 +772,35 @@ def test_multiply_by_scalar(coeff, degree, scalar, expected_coeff):
 @pytest.mark.parametrize(
     "f_pol, s_pol, expected",
     [(Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [2], False), Natural(1, [1])])]]),
-            ['0/1', '- 1/1', '3/1']),
-    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [1]), [Rational([Integers(1, [4], False), Natural(1, [1])]),
-                    Rational([Integers(1, [0], False), Natural(1, [1])]),
-                    Rational([Integers(1, [5], False), Natural(1, [1])])]]),
-            ['- 3/1', '1/1', '- 2/1']),
-    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
-                    Rational([Integers(1, [3], False), Natural(1, [4])]),
-                    Rational([Integers(1, [5], False), Natural(1, [6])])]]),
-            Polynomial([Natural(1, [3]), [Rational([Integers(1, [7], False), Natural(1, [10])]),
-                    Rational([Integers(1, [2], False), Natural(1, [5])]),
-                    Rational([Integers(1, [4], False), Natural(1, [3])]),
-                    Rational([Integers(1, [3], False), Natural(1, [4])])]]),
-            ['- 2/10', '7/20', '- 3/6', '- 3/4']),
-    (Polynomial([Natural(1, [2]), [Rational([Integers(1, [2], False), Natural(1, [1])]),
-                    Rational([Integers(1, [3], False), Natural(1, [1])]),
-                    Rational([Integers(1, [4], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [4]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                    Rational([Integers(1, [0], False), Natural(1, [1])]),
-                    Rational([Integers(1, [5], False), Natural(1, [1])]),
-                    Rational([Integers(1, [6], True), Natural(1, [1])]),
-                    Rational([Integers(1, [7], True), Natural(1, [1])])]]),
-            ['1/1', '3/1', '- 1/1', '6/1', '7/1'])])
+                                    Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
+      Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [2], False), Natural(1, [1])])]]),
+      ['0/1', '- 1/1', '3/1']),
+     (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [1])])]]),
+      Polynomial([Natural(1, [1]), [Rational([Integers(1, [4], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [0], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [5], False), Natural(1, [1])])]]),
+      ['- 3/1', '1/1', '- 2/1']),
+     (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [4])]),
+                                    Rational([Integers(1, [5], False), Natural(1, [6])])]]),
+      Polynomial([Natural(1, [3]), [Rational([Integers(1, [7], False), Natural(1, [10])]),
+                                    Rational([Integers(1, [2], False), Natural(1, [5])]),
+                                    Rational([Integers(1, [4], False), Natural(1, [3])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [4])])]]),
+      ['- 2/10', '7/20', '- 3/6', '- 3/4']),
+     (Polynomial([Natural(1, [2]), [Rational([Integers(1, [2], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [3], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [4], False), Natural(1, [1])])]]),
+      Polynomial([Natural(1, [4]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [0], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [5], False), Natural(1, [1])]),
+                                    Rational([Integers(1, [6], True), Natural(1, [1])]),
+                                    Rational([Integers(1, [7], True), Natural(1, [1])])]]),
+      ['1/1', '3/1', '- 1/1', '6/1', '7/1'])])
 def test_subtract_polynomial(f_pol, s_pol, expected):
     result = f_pol.subtract_polynomial(s_pol)
     result_list = [str(i) for i in result.coefficients]
@@ -830,34 +830,34 @@ def test_factor_polynomial(coeff, degree, expected_coeff):
 
 
 @pytest.mark.parametrize("f_pol, s_pol, expected",
-    [(Polynomial([Natural(1, [2]), [ Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [3], False), Natural(1, [2])])]]),
-            Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [2], False), Natural(1, [1])])]]),
-            ['7/8']),
-        (Polynomial([Natural(1, [3]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
-                Rational([Integers(1, [3], False), Natural(1, [4])]),
-                Rational([Integers(1, [4], False), Natural(1, [3])]),
-                Rational([Integers(1, [5], False), Natural(1, [6])])]]),
-            Polynomial([Natural(1, [2]), [Rational([Integers(1, [7], False), Natural(1, [10])]),
-                Rational([Integers(1, [2], False), Natural(1, [5])]),
-                Rational([Integers(1, [3], False), Natural(1, [4])])]]),
-            ['- 890/2700', '- 1355/2700']),
-        (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [3], False), Natural(1, [1])]),
-                Rational([Integers(1, [5], False), Natural(1, [3])])]]),
-            Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], True), Natural(1, [2])]),
-                Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [3], False), Natural(1, [2])])]]),
-            ['28/18', '34/18']),
-        (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [2], False), Natural(1, [1])]),
-                Rational([Integers(1, [4], False), Natural(1, [1])])]]),
-            Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
-                Rational([Integers(1, [3], False), Natural(1, [1])]),
-                Rational([Integers(1, [3], False), Natural(1, [1])])]]),
-            ['- 1/3', '- 6/3'])])
+                         [(Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [2])])]]),
+                           Polynomial([Natural(1, [1]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [2], False), Natural(1, [1])])]]),
+                           ['7/8']),
+                          (Polynomial([Natural(1, [3]), [Rational([Integers(1, [1], False), Natural(1, [2])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [4])]),
+                                                         Rational([Integers(1, [4], False), Natural(1, [3])]),
+                                                         Rational([Integers(1, [5], False), Natural(1, [6])])]]),
+                           Polynomial([Natural(1, [2]), [Rational([Integers(1, [7], False), Natural(1, [10])]),
+                                                         Rational([Integers(1, [2], False), Natural(1, [5])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [4])])]]),
+                           ['- 890/2700', '- 1355/2700']),
+                          (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [5], False), Natural(1, [3])])]]),
+                           Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], True), Natural(1, [2])]),
+                                                         Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [2])])]]),
+                           ['28/18', '34/18']),
+                          (Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [2], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [4], False), Natural(1, [1])])]]),
+                           Polynomial([Natural(1, [2]), [Rational([Integers(1, [1], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [1])]),
+                                                         Rational([Integers(1, [3], False), Natural(1, [1])])]]),
+                           ['- 1/3', '- 6/3'])])
 def test_polynomial_remainder(f_pol, s_pol, expected):
     result = f_pol.polynomial_remainder(s_pol)
     result_list = [str(i) for i in result.coefficients]
@@ -894,15 +894,16 @@ def test_mul_and_div_pol(poly1, poly2):
     assert [str(i.fraction_reduction()) for i in (poly1 * poly2).div_polynom(poly2).coefficients if
             i.numerator.values != [0]] == \
            [str(i.fraction_reduction()) for i in poly1.coefficients]
-           
+
+
 # Параметризованные тесты для gcf_pol
 @pytest.mark.parametrize("coeff_1, degree_1, coeff_2, degree_2, expected_gcd", [
     # Пример 1: НОД для двух многочленов, имеющих общий множитель x + 1
     (['1/1', '2/1', '1/1'], '2', ['1/1', '1/1'], '1', ['1/1', '1/1']),
-    
+
     # Пример 2: НОД двух многочленов, равный 1 (взаимно простые)
     (['3/1', '0/1', '1/1'], '2', ['2/1', '1/1'], '1', ['1/1']),
-    
+
     # Пример 3: НОД одинаковых многочленов
     (['2/1', '4/1'], '1', ['2/1', '4/1'], '1', ['2/1', '4/1'])
 ])

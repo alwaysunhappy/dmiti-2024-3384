@@ -1,3 +1,6 @@
+import copy
+
+
 class Natural:
     """
         Представляет натуральное число, хранящееся в виде массива цифр.
@@ -30,6 +33,7 @@ class Natural:
 
     def number_is_not_zero(self):
         """
+        Выполнил Кирилл Пак гр. 3384
         NZER_N_B
         Функция которое проверяет является ли число не нулевым.
         Если число равно 0 возвращает False, иначе True.
@@ -38,6 +42,7 @@ class Natural:
 
     def multiplication_by_digit(self, number):
         """
+            Выполнил Баяндин Дмитрий гр.3384
             MUL_ND_N
             Умножение натурального числа на цифру
         """
@@ -57,10 +62,10 @@ class Natural:
         natural.del_leader_zero()
         return natural
 
-
-
     def cmp_of_natural_number(self, other):
         """
+            Выполнила Котельникова Лиза гр.3384
+            COM_NN_D
             Сравнивает два натуральных числа и возвращает:
             2 - если первое число больше второго,
             0 - если числа равны,
@@ -80,6 +85,7 @@ class Natural:
 
     def increment(self):
         """
+            Выполнила Полещук Виолетта гр. 3384
             ADD_1N_N
             Добавление 1 к натуральному числу
         """
@@ -107,6 +113,7 @@ class Natural:
 
     def __add__(self, other):
         """
+            Выполнил Баяндин Дмитрий гр.3384
             ADD_NN_N
             Складывает два натурльных числа и возвращает результат
         """
@@ -121,17 +128,19 @@ class Natural:
             if smaller_number.n >= i:  # если у меньшего числа еще есть что складывать
                 answer[-i] = larger_number.values[-i] + smaller_number.values[-i] + shift
                 shift = 0
+                #  переносим десяток на следующий разряд, если это нужно
                 if answer[-i] > 9:
                     answer[-i] -= 10
                     shift = 1
             elif larger_number.n >= i:  # когда у второго числа уже нечего складывать
                 answer[-i] = larger_number.values[-i] + shift
                 shift = 0
+                #  переносим десяток на следующий разряд, если это нужно
                 if answer[-i] > 9:
                     answer[-i] -= 10
                     shift = 1
             else:
-                answer[-i] = shift  # обрабатываем случай, если перенос случился на первом разрде (9 + 99 = 18)
+                answer[-i] = shift  # обрабатываем случай, если перенос случился на первом разрде (1 + 99 = 100)
                 # <- здесь запишем единицу
 
         natural = create_natural(answer)
@@ -140,6 +149,7 @@ class Natural:
 
     def __sub__(self, other):
         """
+            Выполнил Баяндин Дмитрий гр.3384
             SUB_NN_N
             Вычитание натуральных чисел
         """
@@ -153,11 +163,12 @@ class Natural:
 
             j = -i
 
+            # будет занимать, пока это необхдимо (как при вычитании столбик "руками")
             while larger_number.values[j] < 0:
+                # текущему разряду прибавляем десяток, а у следущего отнимаем (занимаем)
                 larger_number.values[j] += 10
                 larger_number.values[j - 1] -= 1
                 j -= 1
-
 
         natural = create_natural(larger_number.values)
         natural.del_leader_zero()
@@ -165,6 +176,7 @@ class Natural:
 
     def multiply_by_ten(self, k):
         """
+        Выполнил Пак Кририлл гр.3384
         MUL_Nk_N
         Функция умножения натурального числа на 10^k
         """
@@ -178,50 +190,55 @@ class Natural:
             degree = degree.__sub__(create_natural([1]))
         return natural
 
-    def __mul__(self,other):
+    def __mul__(self, other):
         """
+        Выполнил Пак Кирилл гр. 3384
         MUL_NN_N
         Функция для умножения 2 натуральных чисел.
         """
-        if (self.number_is_not_zero() == False ) or (other.number_is_not_zero() == False ):
+        if (self.number_is_not_zero() == False) or (other.number_is_not_zero() == False):
             return Natural(1, [0])
 
         cmp = self.cmp_of_natural_number(other)  # сравниваем 2 числа, чтобы понять какое число больше.
 
-        if cmp == 2 or cmp == 0: # Копируем больший элемент в larger_number, а меньший в lower_number
+        if cmp == 2 or cmp == 0:  # Копируем больший элемент в larger_number, а меньший в lower_number
             larger_number = self.copy()
-            lower_number= other.copy()
+            lower_number = other.copy()
         else:
             lower_number = self.copy()
             larger_number = other.copy()
 
-        res = Natural(1,[0])
+        res = Natural(1, [0])
         k = create_natural([0])
-        for i in range(-1, -lower_number.n - 1, -1): # Проходим по разрядам меньшего элемента и умножаем их на большее число(эти действия аналогичные умножению в столбик)
+        for i in range(-1, -lower_number.n - 1,
+                       -1):  # Проходим по разрядам меньшего элемента и умножаем их на большее число(эти действия аналогичные умножению в столбик)
             tmp = larger_number.multiplication_by_digit(lower_number.values[i])
             tmp = tmp.multiply_by_ten(k)
-            res = res.__add__(tmp) # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
+            res = res.__add__(tmp)  # Суммируем произведение большего числа на цифру меньшего, умноженное на 10^k
             k += create_natural([1])
         return res
 
     def trans_in_integer(self, sign: bool = False):
         """
+        Выполнил Козьмин Никита гр. 3384
         TRANS_N_Z
         Преобразование натурального в целое
         """
         return Integers(self.n, self.values.copy(), sign)
-      
+
     def subtract_scaled_natural(self, other, number):
         """
+        Выполнил Траксель Виталий гр. 3384
         SUB_NDN_N
         Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
         """
-        mul = other.multiplication_by_digit(number) # Умножение второго натурального на цифру
-        if self.cmp_of_natural_number(mul) != 1: # Проверка на то, что при вычетании будет неотрицательный результат
-            return self.__sub__(mul) # вычитание
+        mul = other.multiplication_by_digit(number)  # Умножение второго натурального на цифру
+        if self.cmp_of_natural_number(mul) != 1:  # Проверка на то, что при вычетании будет неотрицательный результат
+            return self.__sub__(mul)  # вычитание
 
     def first_digit__of_scaled_division(self, other):
         """
+        Выполнил Траксель Виталий гр.3384
         Вычисление первой цифры деления большего натурального на меньшее, домноженное на 10^k,
         где k - номер позиции этой цифры (номер считается с нуля)
         DIV_NN_Dk
@@ -248,6 +265,7 @@ class Natural:
 
     def div_natural(self, other):
         """
+        Выполнил Траксель Виталий гр.3384
         Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
         DIV_NN_N
         """
@@ -267,6 +285,7 @@ class Natural:
 
     def mod_natural(self, other):
         """
+        Выполнил Траксель Виталий гр.3384
         Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
         MOD_NN_N
         """
@@ -278,12 +297,10 @@ class Natural:
         result_div = larger_number.div_natural(smaller_number)  # получили неполное частное
         result_mul = result_div.__mul__(smaller_number)  # домножили на делитель
         return larger_number.__sub__(result_mul)  # вернули остаток от деления
-    
-    def __str__(self):
-        return "".join(list(map(str, self.values)))
-    
+
     def gcf_natural(self, other):
         """
+        Выполнил Хальзев Александр гр. 3384
         GCF_NN_N
         Вычисление наибольшего общего делителя двух натуральных чисел.
         """
@@ -300,10 +317,15 @@ class Natural:
 
     def lmc_natural(self, other):
         """
+        Выполнил Хальзев Александр гр.3384
         LCM_NN_N
         НОК натуральных чисел.
         """
         return self.__mul__(other).div_natural(self.gcf_natural(other))
+
+    def __str__(self):
+        return "".join(list(map(str, self.values)))
+
 
 class Integers(Natural):
     """
@@ -330,6 +352,7 @@ class Integers(Natural):
 
     def check_sign(self):
         """
+        Выполнила Конасова Яна гр.3384
         POZ_Z_D
         Определение положительности числа. (0-число равно 0, 1 - отрицательное, 2 - положительное)
         """
@@ -342,6 +365,7 @@ class Integers(Natural):
 
     def abs_integer(self):
         """
+            Выполнила Котельникова Елизавета гр. 3384
             ABS_Z_N
             Функция берет модуль числа и возвращает его
         """
@@ -351,6 +375,7 @@ class Integers(Natural):
 
     def invert_sign(self):
         """"
+            Выполнила Полещук Виолетта гр. 3384
             MUL_ZM_Z
             Умножение целого на (-1)
         """
@@ -363,22 +388,25 @@ class Integers(Natural):
 
     def trans_in_natural(self):
         """
+        Выполнил Козьмин Никита гр. 3384
         TRANS_Z_N
         Преобразование целого неотрицательного в натуральное
         """
         if self.sign == True:
             raise ValueError("Число не может быть отрицательное!")
         return Natural(self.n, self.values.copy())
-    
+
     def trans_in_rational(self):
         """
-        TRANS_Q_Z
+        Выполнил Козьмин Никита гр. 3384
+        TRANS_Z_Q
         Преобразование целого в дробное
         """
         return Rational([self.copy(), Natural(1, [1])])
 
     def __add__(self, other):
         """"
+            Выполнила Полещук Виолетта гр. 3384
             ADD_ZZ_Z
             Сложение целых чисел
         """
@@ -402,13 +430,10 @@ class Integers(Natural):
             # Определяет знак результата (оставляет знак другого объекта, если результат не равен нулю)
             sign = integer_second.sign if result.values != [0] else False
             return Integers(result.n, result.values, sign)
-        
-    def __str__(self):
-        sign = "- " if self.sign else ""
-        return sign + "".join(list(map(str, self.values)))
 
     def subtraction_integers(self, other):
         """"
+            Выполнила Конасова Яна гр. 3384
             SUB_ZZ_Z
             Вычитание целых чисел
         """
@@ -451,6 +476,7 @@ class Integers(Natural):
 
     def __mul__(self, other):
         """"
+        Выполнил Пак Кирилл гр. 3384
         MUL_ZZ_Z
         Функция для умножения целых чисел.
         """
@@ -467,12 +493,13 @@ class Integers(Natural):
 
         first_number = first_number.trans_in_natural()
         second_number = second_number.trans_in_natural()
-        res = first_number.__mul__(second_number)# умножаем используя функцию умножения натуральных
+        res = first_number.__mul__(second_number)  # умножаем используя функцию умножения натуральных
         res = res.trans_in_integer(new_number_sign)  # превращаем число в целое и устанавливаем знак
         return res
 
     def div_integer(self, other):
         """
+        Выполнил Пак Кирилл гр. 3384
         DIV_ZZ_Z
         Функция для нахождения частного от деления на ненулевое число
         """
@@ -495,21 +522,31 @@ class Integers(Natural):
             if not (res.number_is_not_zero()):  # Проверяем, является ли частное нулем
                 return Integers(1, [0], False)
 
-            if self.sign == True and dividend.__sub__(divisor.__mul__(res)).number_is_not_zero(): #Проверяем может ли быть остаток отрицательным.
+            if self.sign == True and dividend.__sub__(
+                    divisor.__mul__(res)).number_is_not_zero():  # Проверяем может ли быть остаток отрицательным.
                 res = res.__add__(Integers(1, [1], False))
             res = res.trans_in_integer(res_sign)  # Добавляем знак
 
             return res
 
     def mod_integer(self, other):
-        dividend = self.copy()  #делаем копии делимого и делителя
+        """
+        Выполнил Пак Кирилл гр. 3384
+        MOD_ZZ_Z
+        Остаток от деления целого на целое(делитель отличен от нуля)
+        """
+        dividend = self.copy()  # делаем копии делимого и делителя
         divisor = other.copy()
 
-        quotlent = dividend.div_integer(divisor) #находим частное
+        quotlent = dividend.div_integer(divisor)  # находим частное
 
-        mod = dividend.subtraction_integers(divisor.__mul__(quotlent)) # находим остаток от деления
+        mod = dividend.subtraction_integers(divisor.__mul__(quotlent))  # находим остаток от деления
 
         return mod
+
+    def __str__(self):
+        sign = "- " if self.sign else ""
+        return sign + "".join(list(map(str, self.values)))
 
 
 class Rational:
@@ -533,79 +570,86 @@ class Rational:
         return Rational([self.numerator.copy(), self.denominator.copy()])
 
     def trans_in_integer(self):
+        """
+        Выполнил Козьмин Никита гр. 3384
+        TRANS_Q_Z
+        Преобразование сокращенного дробного в целое (если знаменатель равен 1)
+        """
         if self.denominator.values != [1]:
             raise ValueError("Знаменатель должен быть единицой!")
         return self.numerator.copy()
-    
-    def __str__(self):
-        return self.numerator.__str__() + "/" + self.denominator.__str__()
-        
+
     def int_check(self):
         """
+        Выполнил Александр Хальзев гр. 3384
+        INT_Q_B
         Проверка сокращенного дробного на целое, если рациональное число является целым, то True, иначе False
         """
         num = self.numerator
         den = self.denominator
         den1 = den
-        #сравнение числителя со знаменателем
+        # сравнение числителя со знаменателем
         num = num.abs_integer().trans_in_natural()
         comp = num.cmp_of_natural_number(den)
-    	#если числитель == знаменателю, то True
+        # если числитель == знаменателю, то True
         if comp == 0:
             return True
-    	#если знаменатель больше сразу False
+        # если знаменатель больше сразу False
         if comp == 1:
             return False
-    
+
         if comp == 2:
-            #пока числитель больше знаменателя, умножаем знаменатель, пока тот не превысит или станет равным числителю
+            # пока числитель больше знаменателя, умножаем знаменатель, пока тот не превысит или станет равным числителю
             while num.cmp_of_natural_number(den) == 2:
                 den = den.__add__(den1)
-            #если стал равен то True иначе False
+            # если стал равен то True иначе False
             if num.cmp_of_natural_number(den) == 0:
                 return True
             else:
                 return False
-     
+
     def sub_rat(self, other):
         """
+            Выполнила Конасова Яна гр. 3384
             SUB_QQ_Q
             Вычитание дробей.
         """
         dom1 = self.denominator
         dom2 = other.denominator
-        #нахождение общего делителя, используя НОК
+        # нахождение общего делителя, используя НОК
         domin = dom1.lmc_natural(dom2)
-        #нахождение коэффициетов умножения
+        # нахождение коэффициетов умножения
         coef1 = domin.div_natural(dom1)
         coef2 = domin.div_natural(dom2)
-        #умножение этих коэффициетнов на числители
+        # умножение этих коэффициетнов на числители
         new_num1 = self.numerator.__mul__(Integers(len(coef1.values), coef1.values, False))
         new_num2 = other.numerator.__mul__(Integers(len(coef2.values), coef2.values, False))
-        #вычитание приведенных числителей
+        # вычитание приведенных числителей
         fin_num = new_num1.subtraction_integers(new_num2)
-        #если в результате получился 0 в числителе, то знаменатель = 1
-        if fin_num.values==[0]:
+        # если в результате получился 0 в числителе, то знаменатель = 1
+        if fin_num.values == [0]:
             return Rational([fin_num, Natural(1, [1])])
         return Rational([fin_num, domin])
 
     def __mul__(self, other):
         """"
-        MUL_QQ_Q
-        Функция созданная для умножения дробей.
+            Выполнил Пак Кирилл гр. 3384
+            MUL_QQ_Q
+            Функция созданная для умножения дробей.
         """
-        f_number = self.copy() # Создаем копии чисел
+        f_number = self.copy()  # Создаем копии чисел
         s_number = other.copy()
 
-        new_numerator = f_number.numerator.__mul__(s_number.numerator) # Считаем числитель
-        new_denominator = f_number.denominator.__mul__(s_number.denominator) # Считаем знаменатель
+        new_numerator = f_number.numerator.__mul__(s_number.numerator)  # Считаем числитель
+        new_denominator = f_number.denominator.__mul__(s_number.denominator)  # Считаем знаменатель
 
-        res = Rational([new_numerator , new_denominator]) # Создаем дробь из числителя и знаменателя
+        res = Rational([new_numerator, new_denominator])  # Создаем дробь из числителя и знаменателя
 
         return res
 
     def fraction_reduction(self):
         """
+            Выполнила Котельникова Елизавета гр. 3384
             RED_Q_Q
             Сокращение дроби
         """
@@ -618,13 +662,14 @@ class Rational:
             fraction.numerator.sign = True  # вернули знак числителю
         if gcf != 1:  # Если НОД больше одного, делим числитель и знаменатель на их НОД
             fraction.numerator = fraction.numerator.div_integer(gcf.trans_in_integer())
-            fraction.denominator = create_integer(fraction.denominator.values, False).div_integer(gcf.trans_in_integer())
+            fraction.denominator = fraction.denominator.div_natural(gcf)
         fraction.numerator.n = len(self.numerator.values)  # записали новую длину
         fraction.denominator.n = len(self.denominator.values)
         return fraction
 
     def division_of_fractions(self, other):
         """
+            Выполнила Котельникова Елизавета гр. 3384
             DIV_QQ_Q
             Деление дробей (делитель отличен от нуля)
         """
@@ -636,29 +681,33 @@ class Rational:
         first_fraction.denominator = Natural(result.n, result.values)
         first_fraction.numerator.sign = remembered_sign
         return first_fraction
-    
+
     def __add__(self, other):
         """
+            Выполнила Полещук Виолетта гр. 3384
             ADD_QQ_Q
             Сложение дробей
         """
         # Находим наименьшее общее кратное (НОК) знаменателей двух дробей.
-        lcm =  self.denominator.lmc_natural(other.denominator)
-        
+        lcm = self.denominator.lmc_natural(other.denominator)
+
         # Вычисляем множители, на которые нужно умножить числители,
         # чтобы привести дроби к общему знаменателю.
-        
+
         multiplier_first = lcm.div_natural(self.denominator).trans_in_integer()
 
-        multiplier_second = lcm.div_natural(other.denominator).trans_in_integer() 
+        multiplier_second = lcm.div_natural(other.denominator).trans_in_integer()
 
         # Складываем числители, умноженные на соответствующие множители.
-        numerator1 = self.numerator.__mul__(multiplier_first) 
+        numerator1 = self.numerator.__mul__(multiplier_first)
         numerator2 = other.numerator.__mul__(multiplier_second)
         result_numerator = numerator1.__add__(numerator2)
         # Создаем результирующую дробь с полученным числителем и общим знаменателем.
         result = Rational([result_numerator, lcm])
         return result
+
+    def __str__(self):
+        return self.numerator.__str__() + "/" + self.denominator.__str__()
 
 
 class Polynomial:
@@ -684,38 +733,40 @@ class Polynomial:
 
     def degree_polynomial(self):
         """
+            Выполнила Котельникова Елизавета гр. 3384
             DEG_P_N
-        Функция возвращает степень многочлена
+            Функция возвращает степень многочлена
         """
         return self.degree  # возвращает степень многочлена
-        
+
     def add_pol(self, other):
         """
+            Выполнила Конасова Яна гр. 3384
             Add_PP_P.
             Сложение многочленов.
         """
         arr = []
         diff = self.degree.cmp_of_natural_number(other.degree)
-        #берем наименьшую степень многочленов
+        # берем наименьшую степень многочленов
         if diff == 2:
             mini = int(''.join(map(str, other.degree.values)))
         else:
             mini = int(''.join(map(str, self.degree.values)))
-        #складываем первые члены многочлены, которые есть у обоих многочленов
+        # складываем первые члены многочлены, которые есть у обоих многочленов
         for i in range(mini + 1):
             n = self.coefficients[i].__add__(other.coefficients[i])
             arr.append(n)
         if diff == 2:
-            #если первый полином больше, то заполняем остатки из него, просто добавляя в массив
+            # если первый полином больше, то заполняем остатки из него, просто добавляя в массив
             for i in range(mini + 1, int(''.join(map(str, self.degree.values))) + 1):
                 arr.append(self.coefficients[i])
             return Polynomial([self.degree, arr])
         if diff == 1:
-            #если больше второй то наоборот 
+            # если больше второй то наоборот
             for i in range(mini + 1, int(''.join(map(str, other.degree.values))) + 1):
                 arr.append(other.coefficients[i])
             return Polynomial([other.degree, arr])
-        #удаление нулей в конце, так как они ни на что не влияют и портят конечную степень многочлена
+        # удаление нулей в конце, так как они ни на что не влияют и портят конечную степень многочлена
         while arr[-1].numerator.values == [0]:
             arr = arr[:-1]
         mini = Natural(len([int(x) for x in str(len(arr) - 1)]), [int(x) for x in str(len(arr) - 1)])
@@ -723,8 +774,9 @@ class Polynomial:
 
     def multiply_by_monomial(self, k):
         """
-        MUL_Pxk_P
-        Умножение многочлена на x^k, k-натуральное или 0
+            Выполнила Полещук Виолетта гр. 3384
+            MUL_Pxk_P
+            Умножение многочлена на x^k, k-натуральное или 0
         """
         # Создаем копию текущего полинома, чтобы не изменять оригинал.
         polynomial = self.copy()
@@ -749,9 +801,7 @@ class Polynomial:
         polynomial.degree = create_natural([int(i) for i in str(len(polynomial.coefficients) - 1)])
         # Возвращаем полином, умноженный на одночлен.
         return polynomial
-        
-    
-    
+
     def __str__(self):
         result = ''
         for i in range(len(self.coefficients) - 1, - 1, -1):
@@ -764,98 +814,104 @@ class Polynomial:
         if result[0] == '+':
             result = result[1:]
         return result
-     
+
     def pol_derivative(self):
-        '''
+        """
+            Выполнил Хальзев Александр гр. 3384
             DER_P_P
             Возвращает производную многочлена.
-        '''
-        #глубокое копирование с отбрасыванием последнего коэффициента
+        """
+        # глубокое копирование с отбрасыванием последнего коэффициента
         pol = copy.deepcopy(self)
         coeffs = pol.coefficients[1:]
         new_coeffs = []
-        #коэффициент для умножения
+        # коэффициент для умножения
         deg = 1
         for coef in coeffs:
-            #алгоритм создания нового коэффицинта, в зависимости от его расположения в массиве коэффициентов
+            # алгоритм создания нового коэффицинта, в зависимости от его расположения в массиве коэффициентов
             s = coef.numerator.sign
             value = coef.numerator.abs_integer().trans_in_natural().multiplication_by_digit(deg).values
             Int_coef = Integers(len(value), value, s)
             coef = Rational([Int_coef, coef.denominator])
             new_coeffs.append(coef)
             deg += 1
-        
+
         return Polynomial([pol.degree.__sub__(Natural(1, [1])), new_coeffs])
-    
+
     def gcf_pol(self, other):
         """
+            Выполнила Конасова Яна гр. 3384
             GCF_PP_P
             НОД многочленов.
         """
-        #копирование наибольего в pol_1, а меньшего в pol_2
+        # копирование наибольего в pol_1, а меньшего в pol_2
         if self.degree.cmp_of_natural_number(other.degree) == 1:
             pol_1 = other.copy()
             pol_2 = self.copy()
         else:
             pol_1 = self.copy()
             pol_2 = other.copy()
-        #если равны, то НОД любой из них
+        # если равны, то НОД любой из них
         if pol_1.coefficients == pol_2.coefficients:
             return pol_1
-        #находим остаток от деления pol_1 на pol_2 и сохраняем делитель в pol_3
+        # находим остаток от деления pol_1 на pol_2 и сохраняем делитель в pol_3
         ost = pol_1.polynomial_remainder(pol_2)
         pol_3 = pol_2
         while ost.coefficients != []:
-            #если НОД равен числу, а не полиному, то выводим единицу
+            # если НОД равен числу, а не полиному, то выводим единицу
             if len(ost.coefficients) == 1:
                 return Polynomial([Natural(1, [0]), [Rational([Integers(1, [1], False), Natural(1, [1])])]])
-            #сохраняем последний остаток, так как он может быть последним != 0, в ином случае он станет делиммым
+            # сохраняем последний остаток, так как он может быть последним != 0, в ином случае он станет делиммым
             ost1 = ost
             ost = pol_3.polynomial_remainder(ost)
             pol_3 = ost1
-            #цикл завершается, когда последний остаток == 0
+            # цикл завершается, когда последний остаток == 0
         return pol_3
 
     def eliminating_duplicate_roots(self):
-    """
-    	NMR_P_P
-    	Преобразование многочлена — кратные корни в простые.
-    """
+        """
+            Выполнила Хальзев Александр гр. 3384
+            NMR_P_P
+            Преобразование многочлена — кратные корни в простые.
+        """
+
         pol = self.copy()
         # Нахождение производной многочлена
         f_der = pol.pol_derivative()
-        print(self, f_der)
         # Нахождение НОД многочлена
         d = pol.gcf_pol(f_der)
         if d.degree.n == 1 and d.degree.values[0] == 0:
             return pol
         # Выводим результат деления многочлена на d
         return pol.div_polynom(d)
-    
+
     def leading_coefficient(self):
         """
-        LED_P_Q
-        Возвращает старший коэффициент многочлена.
+            Выполнила Прокопович Яна гр. 3384
+            LED_P_Q
+            Возвращает старший коэффициент многочлена.
         """
         # Ищем первый ненулевой коэффициент, начиная с конца списка
         for coefficient in reversed(self.coefficients):
             if coefficient.numerator.values != [0]:  # проверяем, что коэффициент не равен нулю
                 return coefficient
         return None  # возвращаем None, если все коэффициенты нулевые
-    
+
     def multiply_by_scalar(self, scalar):
         """
-        MUL_PQ_P
-        Умножение многочлена на рациональное число
+            Выполнила Прокопович Яна гр. 3384
+            MUL_PQ_P
+            Умножение многочлена на рациональное число
         """
         polynomial = self.copy()
         polynomial.coefficients = [number.__mul__(scalar) for number in polynomial.coefficients]
         return polynomial
-    
+
     def subtract_polynomial(self, other):
         """
-        SUB_PP_P
-        Вычитание многочленов.
+            Выполнила Прокопович Яна гр. 3384
+            SUB_PP_P
+            Вычитание многочленов.
         """
         f_pol = self.copy()
         s_pol = other.copy()
@@ -884,11 +940,12 @@ class Polynomial:
         else:
             new_degree = Natural(1, [0])  # Нулевой многочлен степени 0
         return Polynomial([new_degree, arr])
-    
+
     def factor_polynomial(self):
         """
-        FAC_P_Q
-        Вынесение из многочлена НОК знаменателей и НОД числителей
+            Выполнила Прокопович Яна гр. 3384
+            FAC_P_Q
+            Вынесение из многочлена НОК знаменателей и НОД числителей
         """
         polynomial = self.copy()
         # Получаем списки числителей и знаменателей для каждого коэффициента
@@ -909,11 +966,12 @@ class Polynomial:
         for i in range(len(polynomial.coefficients)):
             polynomial.coefficients[i] = polynomial.coefficients[i].division_of_fractions(common_factor)
         return polynomial
-    
+
     def polynomial_remainder(self, other):
         """
-        MOD_PP_P
-        Вычисляет остаток от деления многочлена на многочлен при делении с остатком.
+            Выполнила Прокопович Яна гр. 3384
+            MOD_PP_P
+            Вычисляет остаток от деления многочлена на многочлен при делении с остатком.
         """
         f_pol = self.copy()
         s_pol = other.copy()
@@ -928,10 +986,15 @@ class Polynomial:
         return remainder
 
     def __mul__(self, other):
-        #создаем полином для записи ответа
+        """
+            Выполнил Баяндин Дмитрий гр. 3384
+            MUL_PP_P
+            Умножение многочленов
+        """
+        # создаем полином для записи ответа
         answer = Polynomial([create_natural([0]), [create_rational(create_integer([0], False), create_natural([1]))]])
 
-        #сделали копии полиномов
+        # сделали копии полиномов
         first_pol = self.copy()
         second_pol = other.copy()
 
@@ -939,17 +1002,22 @@ class Polynomial:
         for i in range(len(second_pol.coefficients)):
             # умножаем первый полином на x^i
             multiply_xi = first_pol.multiply_by_monomial(create_natural([int(j) for j in str(i)]))
-            #умножаем первый полином на коэффициент соответсвующий слагаемому степени x^i и прибавляем его к ответу
+            # умножаем первый полином на коэффициент соответсвующий слагаемому степени x^i и прибавляем его к ответу
             answer = answer.add_pol(multiply_xi.multiply_by_scalar(second_pol.coefficients[i]))
 
         return answer
 
     def div_polynom(self, other):
+        """
+            Выполнил Баяндин Дмитрий гр. 3384
+            DIV_PP_P
+            Частное от деления многочлена на многочлен при делении с остатком
+        """
         # если степень второго полинома больше, чем степень первого, частное будет равно 0
         if self.degree.cmp_of_natural_number(other.degree) == 1:
             return Polynomial([create_natural([0]), [create_rational(create_integer([0], False), create_natural([1]))]])
 
-        #сделали копии полиномов
+        # сделали копии полиномов
         first_pol = self.copy()
         second_pol = other.copy()
 
@@ -961,9 +1029,11 @@ class Polynomial:
             # получаем коэффициент домножения делителя (отношение старших коэффициентов)
             ratio = first_pol.coefficients[-1].division_of_fractions(second_pol.coefficients[-1])
             # прибавляем к результату одночлен, с коэффициентом ratio и степенью равной разности степеней делимого и делителя
-            answer = answer.add_pol((Polynomial([create_natural([0]), [ratio]])).multiply_by_monomial(first_pol.degree - second_pol.degree))
+            answer = answer.add_pol(
+                (Polynomial([create_natural([0]), [ratio]])).multiply_by_monomial(first_pol.degree - second_pol.degree))
             # вычитаем из делимого полином, полученный умножением одночлена на делитель
-            first_pol = first_pol.subtract_polynomial(second_pol.multiply_by_monomial(first_pol.degree - second_pol.degree).multiply_by_scalar(ratio))
+            first_pol = first_pol.subtract_polynomial(
+                second_pol.multiply_by_monomial(first_pol.degree - second_pol.degree).multiply_by_scalar(ratio))
         return answer
 
 
@@ -1057,11 +1127,269 @@ class Launch:
         self.number = number
 
     def start_function(self):
+        if self.number == 0:
+            print("Чтобы запустить функцию нужно ввести число от 1 до 45, где каждый номер означает функцию.")
+            print("1 - Сравнение натуральных чисел")
+            print("2 - Проверка на ноль")
+            print("3 - Добавление 1 к натуральному числу")
+            print("4 - Сложение натуральных чисел")
+            print("5 - Вычитание из первого большего натурального числа второго меньшего или равного")
+            print("6 - Умножение натурального числа на цифру")
+            print("7 - Умножение натурального числа на 10^k, k-натуральное")
+            print("8 - Умножение натуральных чисел")
+            print("9 - Вычитание из натурального другого натурального, умноженного на цифру для случая с "
+                  "неотрицательным результатом")
+            print("10 - Вычисление первой цифры деления большего натурального на меньшее, домноженное на 10^k,"
+                  "где k - номер позиции этой цифры (номер считается с нуля)")
+            print("11 - Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен "
+                  "от нуля)")
+            print("12 - Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)")
+            print("13 - НОД натуральных чисел")
+            print("14 - НОК натуральных чисел")
+            print("15 - Абсолютная величина числа")
+            print("16 - Определение положительности числа")
+            print("17 - Умножение целого числа на (-1)")
+            print("18 - Преобразование натурального числа в целое")
+            print("19 - Преобразование целого неотрицательного числа в натуральное")
+            print("20 - Сложение целых чисел")
+            print("21 - Вычитание целых чисел")
+            print("22 - Умножение целых чисел")
+            print("23 - Нахождение частного от деления целого на целое (делитель отличен от нуля)")
+            print("24 - Нахождение остатка от деления целого на целое (делитель отличен от нуля)")
+            print("25 - Сокращение дроби")
+            print("26 - Проверка сокращенного дробного на целое")
+            print("27 - Преобразование целого числа в дробное")
+            print("28 - Преобразование сокращенного дробного в целое")
+            print("29 - Сложение дробей")
+            print("30 - Вычитание дробей")
+            print("31 - Умножение дробей")
+            print("32 - Деление дробей")
+            print("33 - Сложение многочленов")
+            print("34 - Вычитание многочленов")
+            print("35 - Умножение многочлена на рациональное число")
+            print("36 - Умножение многочлена на x^k")
+            print("37 - Нахождение старшего коэффициента многочлена")
+            print("38 - Нахождение степени многочлена")
+            print("39 - Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей")
+            print("40 - Умножение многочленов")
+            print("41 - Частное от деления многочлена на многочлен при делении с остатком")
+            print("42 - Остаток от деления многочлена на многочлен при делении с остатком")
+            print("43 - Нахождение НОД многочленов")
+            print("44 - Нахождение производной многочлена")
+            print("45 - Преобразование многочлена — кратные корни в простые")
+
         if self.number == 1:
             natural = input_natural()
             natural_second = input_natural()
             print(natural.cmp_of_natural_number(natural_second))
 
+        if self.number == 2:
+            natural = input_natural()
+            print(natural.number_is_not_zero())
+
+        if self.number == 3:
+            natural = input_natural()
+            print(natural.increment())
+
+        if self.number == 4:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.__add__(natural_second))
+
+        if self.number == 5:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.__sub__(natural_second))
+
+        if self.number == 6:
+            natural = input_natural()
+            number = int(input("Введите цифру: "))
+            print(natural.multiplication_by_digit(number))
+
+        if self.number == 7:
+            natural = input_natural()
+            k = input_natural()
+            print(natural.multiply_by_ten(k))
+
+        if self.number == 8:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.__mul__(natural_second))
+
+        if self.number == 9:
+            natural = input_natural()
+            natural_second = input_natural()
+            k = int(input("Введите цифру: "))
+            print(natural.subtract_scaled_natural(natural_second, k))
+
+        if self.number == 10:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.first_digit__of_scaled_division(natural_second))
+
+        if self.number == 11:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.div_natural(natural_second))
+
+        if self.number == 12:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.mod_natural(natural_second))
+
+        if self.number == 13:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.gcf_natural(natural_second))
+
+        if self.number == 14:
+            natural = input_natural()
+            natural_second = input_natural()
+            print(natural.lmc_natural(natural_second))
+
+        if self.number == 15:
+            integer = input_integer()
+            print(integer.abs_integer())
+
+        if self.number == 16:
+            integer = input_integer()
+            print(integer.check_sign())
+
+        if self.number == 17:
+            integer = input_integer()
+            print(integer.invert_sign())
+
+        if self.number == 18:
+            integer = input_integer()
+            print(integer.trans_in_integer())
+
+        if self.number == 19:
+            integer = input_integer()
+            print(integer.trans_in_natural())
+
+        if self.number == 20:
+            integer = input_integer()
+            integer_second = input_integer()
+            print(integer.__add__(integer_second))
+
+        if self.number == 21:
+            integer = input_integer()
+            integer_second = input_integer()
+            print(integer.__sub__(integer_second))
+
+        if self.number == 22:
+            integer = input_integer()
+            integer_second = input_integer()
+            print(integer.__mul__(integer_second))
+
+        if self.number == 23:
+            integer = input_integer()
+            integer_second = input_integer()
+            print(integer.div_integer(integer_second))
+
+        if self.number == 24:
+            integer = input_integer()
+            integer_second = input_integer()
+            print(integer.mod_integer(integer_second))
+
+        if self.number == 25:
+            fraction = input_rational()
+            print(fraction.fraction_reduction())
+
+        if self.number == 26:
+            fraction = input_rational()
+            print(fraction.int_check())
+
+        if self.number == 27:
+            integer = input_integer()
+            print(integer.trans_in_rational())
+
+        if self.number == 28:
+            fraction = input_rational()
+            print(fraction.trans_in_integer())
+
+        if self.number == 29:
+            fraction = input_rational()
+            fraction_second = input_rational()
+            print(fraction.__add__(fraction_second))
+
+        if self.number == 30:
+            fraction = input_rational()
+            fraction_second = input_rational()
+            print(fraction.sub_rat(fraction_second))
+
+        if self.number == 31:
+            fraction = input_rational()
+            fraction_second = input_rational()
+            print(fraction.__mul__(fraction_second))
+
+        if self.number == 32:
+            fraction = input_rational()
+            fraction_second = input_rational()
+            print(fraction.division_of_fractions(fraction_second))
+
+        if self.number == 33:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.add_pol(polynomial_second))
+
+        if self.number == 34:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.subtract_polynomial(polynomial_second))
+
+        if self.number == 35:
+            polynomial = input_polynomial()
+            fraction = input_rational()
+            print(polynomial.multiply_by_scalar(fraction))
+
+        if self.number == 36:
+            polynomial = input_polynomial()
+            k = input_natural()
+            print(polynomial.multiply_by_monomial(k))
+
+        if self.number == 37:
+            polynomial = input_polynomial()
+            print(polynomial.leading_coefficient())
+
+        if self.number == 38:
+            polynomial = input_polynomial()
+            print(polynomial.degree_polynomial())
+
+        if self.number == 39:
+            polynomial = input_polynomial()
+            print(polynomial.factor_polynomial())
+
+        if self.number == 40:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.__mul__(polynomial_second))
+
+        if self.number == 41:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.div_polynom(polynomial_second))
+
+        if self.number == 42:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.polynomial_remainder(polynomial_second))
+
+        if self.number == 43:
+            polynomial = input_polynomial()
+            polynomial_second = input_polynomial()
+            print(polynomial.gcf_pol(polynomial_second))
+
+        if self.number == 44:
+            polynomial = input_polynomial()
+            print(polynomial.pol_derivative())
+
+        if self.number == 45:
+            polynomial = input_polynomial()
+            print(polynomial.eliminating_duplicate_roots())
+
+
 if __name__ == "__main__":
+    print("Для вывода справки введите 0.")
     a = int(input("Введите номер функции: "))
     Launch(a).start_function()
