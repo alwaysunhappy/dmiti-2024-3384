@@ -28,7 +28,7 @@
 1. ```pip install pytest```
 2. ```git clone https://github.com/alwaysunhappy/dmiti-2024-3384.git```
 3. ```cd dmiti-2024-3384```
-4. ```pytest```
+4. ```pytest test.py```
 
 ## **Таблица прогресса**
 - [Прогрес](https://docs.google.com/spreadsheets/d/139xDInds_ZAyNeRG6LGwJ1NnE_cn7cWbMNGmtOqkQuk/edit?usp=sharing)
