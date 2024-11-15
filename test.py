@@ -905,7 +905,7 @@ def test_mul_and_div_pol(poly1, poly2):
     (['3/1', '0/1', '1/1'], '2', ['2/1', '1/1'], '1', ['1/1']),
 
     # Пример 3: НОД одинаковых многочленов
-    (['2/1', '4/1'], '1', ['2/1', '4/1'], '1', ['2/1', '4/1'])
+    (['2/1', '4/1'], '1', ['2/1', '4/1'], '1', ['2/2', '4/2'])
 ])
 def test_gcf_pol(coeff_1, degree_1, coeff_2, degree_2, expected_gcd):
     def create_polynomial(coeff, degree):
@@ -933,7 +933,7 @@ def test_gcf_pol(coeff_1, degree_1, coeff_2, degree_2, expected_gcd):
 
 
 @pytest.mark.parametrize("coeff, degree, expected_coeff", [
-    (['1/1', '-2/1', '1/1'], '2', ['- 1/2', '1/2']),
+    (['1/1', '-2/1', '1/1'], '2', ['- 1/1', '1/1']),
     (['1/1', '1/1', '1/1'], '2', ['1/1', '1/1', '1/1'])
 ])
 def test_eliminating_duplicate_roots(coeff, degree, expected_coeff):

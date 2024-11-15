@@ -162,7 +162,7 @@ class Polynomial:
 
             pol_3 = ost1
             # цикл завершается, когда последний остаток == 0
-        return pol_3
+        return pol_3.factor_polynomial()
 
     def eliminating_duplicate_roots(self):
         """
@@ -256,7 +256,11 @@ class Polynomial:
         # Вычисляем НОК
         for denom in denominators[1:]:
             lcm_den = lcm_den.lmc_natural(denom)
-        gcf_num_int = Integers(gcf_num.n, gcf_num.values, sign=False)
+            if self.coefficients[-1].numerator.sign is True:
+                flag = True
+            else:
+                flag = False
+        gcf_num_int = Integers(gcf_num.n, gcf_num.values, sign=flag)
         # Создаем общий множитель (НОД числителей и НОК знаменателей)
         common_factor = Rational([gcf_num_int, lcm_den])
         for i in range(len(polynomial.coefficients)):
